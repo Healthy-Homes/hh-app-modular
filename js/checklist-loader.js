@@ -1,4 +1,8 @@
 export async function loadChecklist() {
+  try {
+    const response = await fetch('data/checklist.csv');
+    if (!response.ok) throw new Error('Checklist CSV not found');
+    const text = await response.text();
   const response = await fetch('data/checklist.csv');
   const text = await response.text();
 

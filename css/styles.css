@@ -1,0 +1,7 @@
+/* Tailwind should be included via CDN or PostCSS, this adds custom tweaks */
+
+body {
+  font-family: system-ui, sans-serif;
+}
+<!-- Add inside <head> of index.html if you want Tailwind CDN (Dev Only) -->
+<script src="https://cdn.tailwindcss.com"></script>

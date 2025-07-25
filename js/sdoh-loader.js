@@ -1,6 +1,6 @@
 export async function loadSDOH() {
-  const response = await fetch('data/sdoh.csv');
-  const text = await response.text();
+  const res = await fetch('data/sdoh.csv');
+  const text = await res.text();
 
   const lines = text.trim().split('\n');
   const container = document.getElementById('sdoh-form');

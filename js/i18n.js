@@ -1,5 +1,6 @@
 import { loadChecklist } from './checklist-loader.js';
 import { loadSDOH } from './sdoh-loader.js';
+import { setupConsent } from './consent.js'; // ✅ Import added
 
 let currentLang = 'en';
 let currentTranslations = {};
@@ -38,6 +39,8 @@ export async function switchLanguage(lang) {
     // 🔁 Refresh dynamic content
     await loadChecklist();
     await loadSDOH();
+    setupConsent(); // ✅ Re-render the consent block
+
   } catch (err) {
     console.error(`Language load failed for ${lang}`, err);
   }

@@ -22,12 +22,15 @@ export async function loadSDOH() {
     const select = document.createElement('select');
     select.className = 'border mt-1 w-full';
 
-    optionKeys.filter(k => k).forEach(optKey => {
-      const option = document.createElement('option');
-      option.value = optKey;
-      option.textContent = getTranslation(optKey);
-      select.appendChild(option);
-    });
+    // Remove empty keys and fetch translation live
+    optionKeys
+      .filter(k => k && k.trim().length > 0)
+      .forEach(optKey => {
+        const option = document.createElement('option');
+        option.value = optKey;
+        option.textContent = getTranslation(optKey); // 🟢 Re-resolved dynamically
+        select.appendChild(option);
+      });
 
     div.appendChild(label);
     div.appendChild(document.createElement('br'));

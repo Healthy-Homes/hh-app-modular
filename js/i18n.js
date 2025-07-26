@@ -1,3 +1,6 @@
+import { loadChecklist } from './checklist-loader.js';
+import { loadSDOH } from './sdoh-loader.js';
+
 let currentLang = 'en';
 let currentTranslations = {};
 
@@ -11,7 +14,7 @@ export function setupLanguage() {
   document.getElementById('lang-en').addEventListener('click', () => switchLanguage('en'));
   document.getElementById('lang-zh').addEventListener('click', () => switchLanguage('zh'));
 
-  switchLanguage(currentLang); // load default
+  switchLanguage(currentLang); // Load default language
 }
 
 export async function switchLanguage(lang) {
@@ -21,6 +24,7 @@ export async function switchLanguage(lang) {
     const res = await fetch(`lang/${lang}.json`);
     currentTranslations = await res.json();
 
+    // Update static UI elements
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
       if (currentTranslations[key]) el.textContent = currentTranslations[key];
@@ -30,6 +34,10 @@ export async function switchLanguage(lang) {
       const key = el.getAttribute('data-i18n-placeholder');
       if (currentTranslations[key]) el.setAttribute('placeholder', currentTranslations[key]);
     });
+
+    // 🔁 Refresh dynamic content
+    await loadChecklist();
+    await loadSDOH();
   } catch (err) {
     console.error(`Language load failed for ${lang}`, err);
   }

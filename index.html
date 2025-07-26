@@ -4,20 +4,43 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Healthy Homes Practitioner App</title>
+  
+  <!-- Tailwind CDN for development -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Optional custom tweaks -->
   <link rel="stylesheet" href="css/styles.css" />
-<script type="module" src="js/main.js"></script>
+  
+  <!-- Main JS module -->
+  <script type="module" src="js/main.js"></script>
 </head>
-<body class="bg-gray-100 text-gray-900">
+
+<body class="bg-gray-100 text-gray-900 min-h-screen">
   <header class="p-4 bg-green-700 text-white text-xl font-bold">
     Healthy Homes Practitioner App
   </header>
 
   <main class="p-4 space-y-6">
-    <section id="language-toggle"></section>
+    
+    <!-- Language Toggle Buttons -->
+    <section id="language-toggle" class="mb-4"></section>
+    
+    <!-- Consent Form Section -->
     <section id="consent-block"></section>
+    
+    <!-- Housing Inspection Checklist -->
     <section id="checklist"></section>
+    
+    <!-- Social Determinants of Health Questionnaire -->
     <section id="sdoh-form"></section>
-    <section id="export-buttons"></section>
+    
+    <!-- Export Buttons -->
+    <section id="export-buttons">
+      <button id="export-btn" class="bg-blue-600 text-white px-4 py-2 rounded" data-i18n="export_button">
+        Export Report
+      </button>
+    </section>
+
   </main>
 </body>
 </html>

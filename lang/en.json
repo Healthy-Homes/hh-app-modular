@@ -104,5 +104,9 @@
   "languageBarrier_label": "Do you need an interpreter to communicate with healthcare providers?",
   "languageBarrier_opt1": "Yes",
   "languageBarrier_opt2": "No",
-  "languageBarrier_opt3": "Sometimes"
+  "languageBarrier_opt3": "Sometimes",
+  
+  "resident_name_label": "Resident Name",
+"resident_name_placeholder": "Enter resident name"
+
 }

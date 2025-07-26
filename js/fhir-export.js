@@ -1,98 +1,85 @@
-// fhir-export.js
 import { getTranslation } from './i18n.js';
 
 export function exportFHIRBundle() {
+  const consentCheckbox = document.querySelector('#consent-block input[type="checkbox"]');
+  const nameInput = document.getElementById('resident-name');
+  const checklistItems = document.querySelectorAll('#checklist input[type="checkbox"]');
+  const sdohItems = document.querySelectorAll('#sdoh-form select');
+
+  const residentName = nameInput?.value || 'Unnamed Resident';
+  const consentGiven = consentCheckbox?.checked || false;
+
   const bundle = {
-    resourceType: "Bundle",
-    type: "collection",
+    resourceType: 'Bundle',
+    type: 'collection',
+    identifier: {
+      use: 'official',
+      system: 'https://example.org/healthy-homes',
+      value: `bundle-${Date.now()}-${residentName.replace(/\s+/g, '_')}`
+    },
     entry: []
   };
 
-  const residentName = document.getElementById('resident-name')?.value.trim();
-  const consentChecked = document.getElementById('consent-checkbox')?.checked;
-
-  const timestamp = new Date().toISOString();
-
-  if (residentName || consentChecked) {
-    bundle.entry.push({
-      resource: {
-        resourceType: "Observation",
-        id: "consent-status",
-        status: "final",
-        code: {
-          coding: [
-            {
-              system: "http://loinc.org",
-              code: "64292-6", // Hypothetical consent code
-              display: "Consent to inspection"
-            }
-          ]
-        },
-        subject: {
-          display: residentName || "Unknown resident"
-        },
-        effectiveDateTime: timestamp,
-        valueBoolean: !!consentChecked
-      }
-    });
-  }
-
-  // Checklist items (checkboxes)
-  document.querySelectorAll('#checklist input[type="checkbox"]:checked').forEach(input => {
-    const id = input.id;
-    const label = getTranslation(`label_${id}`);
-
-    bundle.entry.push({
-      resource: {
-        resourceType: "Observation",
-        status: "final",
-        code: {
-          coding: [
-            {
-              system: "https://gravityproject.net",
-              code: `housing-${id}`,
-              display: label
-            }
-          ]
-        },
-        effectiveDateTime: timestamp,
-        valueBoolean: true
-      }
-    });
+  // Include consent status as a basic Observation
+  bundle.entry.push({
+    resource: {
+      resourceType: 'Observation',
+      code: {
+        text: 'Resident consented to inspection'
+      },
+      status: 'final',
+      valueBoolean: consentGiven
+    }
   });
 
-  // SDOH questions
-  document.querySelectorAll('#sdoh-form select').forEach(select => {
-    const id = select.dataset.sdohId;
-    const questionLabel = getTranslation(`${id}_label`);
-    const answerValue = select.value;
+  // Include resident name as a basic Observation
+  bundle.entry.push({
+    resource: {
+      resourceType: 'Observation',
+      code: {
+        text: 'Resident Name'
+      },
+      status: 'final',
+      valueString: residentName
+    }
+  });
 
+  // Checklist items
+  checklistItems.forEach(cb => {
+    if (cb.checked) {
+      bundle.entry.push({
+        resource: {
+          resourceType: 'Observation',
+          code: {
+            text: cb.dataset.label || cb.name
+          },
+          status: 'final',
+          valueBoolean: true
+        }
+      });
+    }
+  });
+
+  // SDOH form responses
+  sdohItems.forEach(select => {
+    const selectedOption = select.options[select.selectedIndex];
     bundle.entry.push({
       resource: {
-        resourceType: "Observation",
-        status: "final",
+        resourceType: 'Observation',
         code: {
-          coding: [
-            {
-              system: "https://gravityproject.net",
-              code: `sdoh-${id}`,
-              display: questionLabel
-            }
-          ]
+          text: select.dataset.label || select.name
         },
-        effectiveDateTime: timestamp,
-        valueString: answerValue
+        status: 'final',
+        valueString: selectedOption.textContent
       }
     });
   });
 
   const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
-
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'HealthyHomesReport.json';
+  a.download = `healthy-homes-${Date.now()}.json`;
   a.click();
-
   URL.revokeObjectURL(url);
 }

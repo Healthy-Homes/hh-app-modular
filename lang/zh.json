@@ -104,5 +104,9 @@
   "languageBarrier_label": "您是否需要翻譯人員與醫療服務提供者溝通？",
   "languageBarrier_opt1": "需要",
   "languageBarrier_opt2": "不需要",
-  "languageBarrier_opt3": "有時需要"
+  "languageBarrier_opt3": "有時需要",
+  
+  "resident_name_label": "住戶姓名",
+"resident_name_placeholder": "請輸入住戶姓名"
+
 }

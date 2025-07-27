@@ -1,59 +1,47 @@
-import { exportFHIRBundle } from './fhir-export.js';
+// pdf-export.js
 
 export function exportPDF(bundle) {
-  const pdfMake = window.pdfMake;
-  if (!bundle?.entry) return;
+  try {
+    console.log('📦 Bundle received in exportPDF:', bundle);
 
-  const now = new Date().toLocaleString();
-  const patient = bundle.entry.find(e => e.resource?.resourceType === 'Patient');
-  const consent = bundle.entry.find(e => e.resource?.resourceType === 'Consent');
-  const observations = bundle.entry.filter(e => e.resource?.resourceType === 'Observation');
-
-  const residentName = patient?.resource?.name?.[0]?.text || 'Unnamed Resident';
-  const consentStatus = consent?.resource?.status === 'active' ? 'Yes' : 'No';
-
-  const tableSection = (title, items) => ({
-    style: 'section',
-    table: {
-      headerRows: 1,
-      widths: ['*', '*'],
-      body: [
-        ['Item', 'Response'],
-        ...items.map(obs => [
-          obs.resource.code?.text || '',
-          obs.resource.valueBoolean !== undefined
-            ? (obs.resource.valueBoolean ? 'Yes' : 'No')
-            : obs.resource.valueString || ''
-        ])
+    // Minimal test to verify pdfMake is working
+    const docDefinition = {
+      content: [
+        { text: 'Healthy Homes Report (EN PDF Test)', fontSize: 18, bold: true, margin: [0, 0, 0, 10] },
+        { text: 'FHIR Bundle Summary:', fontSize: 14, margin: [0, 10, 0, 5] },
+        {
+          ul: [
+            `Resource Type: ${bundle.resourceType || 'Unknown'}`,
+            `Entry Count: ${Array.isArray(bundle.entry) ? bundle.entry.length : 'N/A'}`
+          ]
+        },
+        {
+          text: '---',
+          margin: [0, 10, 0, 10]
+        },
+        {
+          text: 'Full Bundle (JSON)',
+          style: 'subheader',
+          fontSize: 12,
+          margin: [0, 10, 0, 5]
+        },
+        {
+          text: JSON.stringify(bundle, null, 2),
+          fontSize: 8,
+          style: 'code'
+        }
       ]
-    },
-    layout: 'lightHorizontalLines'
-  });
+    };
 
-  const checklist = observations.filter(o => o.resource.code?.coding?.[0]?.system?.includes('checklist'));
-  const sdoh = observations.filter(o => o.resource.code?.coding?.[0]?.system?.includes('loinc'));
-
-  const docDefinition = {
-    content: [
-      { text: 'Healthy Homes Inspection Report', style: 'header' },
-      { text: `Date: ${now}`, style: 'subheader' },
-      { text: `Resident: ${residentName}`, style: 'subheader' },
-      { text: `Consent Given: ${consentStatus}`, style: 'subheader' },
-      '\n',
-      tableSection('Checklist Observations', checklist),
-      '\n',
-      tableSection('Social Needs (SDOH)', sdoh)
-    ],
-    styles: {
-      header: { fontSize: 18, bold: true },
-      subheader: { fontSize: 12, margin: [0, 2] },
-      section: { margin: [0, 8] }
-    },
-    defaultStyle: {
-      fontSize: 10,
-      font: 'Helvetica'
+    // 🔧 pdfMake must be global
+    if (!window.pdfMake || typeof window.pdfMake.createPdf !== 'function') {
+      throw new Error('❌ pdfMake not available');
     }
-  };
 
-  pdfMake.createPdf(docDefinition).open();
+    window.pdfMake.createPdf(docDefinition).open();
+    console.log('✅ PDF generation triggered');
+  } catch (err) {
+    console.error('❌ Error inside exportPDF():', err);
+    alert('PDF export failed internally. Check console for details.');
+  }
 }

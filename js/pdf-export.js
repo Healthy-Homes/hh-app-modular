@@ -1,6 +1,15 @@
-import { getTranslation, currentLang } from './i18n.js';
+import { getTranslation, getCurrentLang } from './i18n.js';
+import { generateFHIRBundle } from './fhir-export.js';
 
-export function exportPDF(bundle) {
+export async function exportPDF() {
+  const bundle = await generateFHIRBundle();
+
+  if (!bundle || !bundle.entry) {
+    console.error('FHIR Bundle is missing or malformed:', bundle);
+    alert('Cannot generate PDF: No export data available.');
+    return;
+  }
+
   const now = new Date().toLocaleString();
   const patientEntry = bundle.entry.find(e => e.resource.resourceType === 'Patient');
   const consentEntry = bundle.entry.find(e => e.resource.resourceType === 'Consent');
@@ -11,7 +20,6 @@ export function exportPDF(bundle) {
     ? getTranslation('consented')
     : getTranslation('not_consented');
 
-  // Group observations
   const checklistObs = observations.filter(o =>
     o.resource.code?.coding?.[0]?.system?.includes('checklist')
   );
@@ -54,12 +62,12 @@ export function exportPDF(bundle) {
       section: { margin: [0, 8] }
     },
     defaultStyle: {
-      font: currentLang === 'zh' ? 'NotoSansTC' : undefined,
+      font: getCurrentLang() === 'zh' ? 'NotoSansTC' : undefined,
       fontSize: 10
     }
   };
 
-  // Optional: embed QR/base64 in future here
+  // Optional future logic: embed base64 bundle or QR code here
 
   pdfMake.createPdf(docDefinition).open();
 }

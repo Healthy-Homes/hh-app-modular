@@ -1,6 +1,6 @@
 import { loadChecklist } from './checklist-loader.js';
 import { loadSDOH } from './sdoh-loader.js';
-import { setupConsent } from './consent.js'; // ✅ Import added
+import { setupConsent } from './consent.js';
 
 let currentLang = 'en';
 let currentTranslations = {};
@@ -36,10 +36,10 @@ export async function switchLanguage(lang) {
       if (currentTranslations[key]) el.setAttribute('placeholder', currentTranslations[key]);
     });
 
-    // 🔁 Refresh dynamic content
+    // Reload dynamic content
     await loadChecklist();
     await loadSDOH();
-    setupConsent(); // ✅ Re-render the consent block
+    setupConsent();
 
   } catch (err) {
     console.error(`Language load failed for ${lang}`, err);
@@ -50,5 +50,6 @@ export function getTranslation(key) {
   return currentTranslations[key] || key;
 }
 
-// ✅ Fix: export currentLang for pdf-export.js
-export { currentLang };
+export function getCurrentLang() {
+  return currentLang;
+}

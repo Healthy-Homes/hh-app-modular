@@ -1,4 +1,4 @@
-// main.js (EN/zh toggle with stable EN PDF export)
+// main.js
 import { loadChecklist } from './checklist-loader.js';
 import { loadSDOH } from './sdoh-loader.js';
 import { setupConsent } from './consent.js';
@@ -12,7 +12,8 @@ console.log('✅ Main.js loaded');
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('✅ DOM fully loaded');
 
-  setupLanguage(); // Loads lang file, sets toggle, and runs setupConsent()
+  setupLanguage();
+  setupConsent();
 
   try {
     await Promise.all([
@@ -33,21 +34,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
+  // ✅ Wait for pdfMake to be ready before allowing export
   exportBtn.addEventListener('click', async () => {
     try {
       const bundle = await exportFHIRBundle();
       console.log('✅ FHIR Bundle ready:', bundle);
 
-      if (!window.pdfMake || typeof window.pdfMake.createPdf !== 'function') {
-        console.error('❌ pdfMake is not defined');
-        alert('Unable to generate PDF: pdfMake not loaded.');
-        return;
-      }
+      await waitForPdfMake(); // ⏳ Ensures safe PDF export
 
-      exportPDF(bundle); // 🧪 Still using English labels only
+      exportPDF(bundle); // 🔧 Currently EN-only
     } catch (err) {
       console.error('❌ Export failed:', err);
       alert('Unable to generate report.');
     }
   });
 });
+
+// ✅ Wait for global pdfMake to load before accessing it
+function waitForPdfMake() {
+  return new Promise((resolve, reject) => {
+    let attempts = 0;
+    const max = 30; // ~6 seconds
+    const interval = setInterval(() => {
+      if (window.pdfMake && typeof window.pdfMake.createPdf === 'function') {
+        clearInterval(interval);
+        console.log('✅ pdfMake loaded');
+        resolve();
+      } else if (++attempts >= max) {
+        clearInterval(interval);
+        reject(new Error('❌ pdfMake failed to load.'));
+      }
+    }, 200);
+  });
+}

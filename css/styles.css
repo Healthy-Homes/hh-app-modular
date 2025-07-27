@@ -1,19 +1,31 @@
 /* Base tweaks */
 body {
   font-family: system-ui, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* Map outer section */
+/* Main layout container */
+main {
+  position: relative;
+  z-index: 0;
+}
+
+/* Map section container */
 #map-section {
   margin-top: 1rem;
   height: 400px;
+  overflow: hidden;
+  z-index: 1;
 }
 
-/* Map div itself */
+/* Map container itself */
 #map {
   height: 100%;
   width: 100%;
   border-radius: 0.5rem;
   border: 1px solid #ccc;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1;
 }

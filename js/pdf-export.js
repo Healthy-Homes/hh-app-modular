@@ -1,17 +1,6 @@
 import { getTranslation, getCurrentLang } from './i18n.js';
 import { exportFHIRBundle } from './fhir-export.js';
 
-// ✅ Use exact font name embedded in vfs_fonts.js
-pdfMake.fonts = {
-  ...(pdfMake.fonts || {}),
-  NotoSansTC: {
-    normal: 'NotoSansTC-Regular.ttf',
-    bold: 'NotoSansTC-Regular.ttf',
-    italics: 'NotoSansTC-Regular.ttf',
-    bolditalics: 'NotoSansTC-Regular.ttf'
-  }
-};
-
 export async function exportPDF() {
   const bundle = await exportFHIRBundle();
 
@@ -73,7 +62,7 @@ export async function exportPDF() {
       section: { margin: [0, 8] }
     },
     defaultStyle: {
-      font: getCurrentLang() === 'zh' ? 'NotoSansTC' : undefined,
+      // Use default system font and let it fall back naturally to CJK-compatible fonts
       fontSize: 10
     }
   };

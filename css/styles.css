@@ -4,8 +4,19 @@ body {
   font-family: system-ui, sans-serif;
 }
 
-/* Map container height fix */
+/* Map section container */
+#map-section {
+  height: 400px;
+  max-height: 400px;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+
+/* Map container itself */
 #map {
   height: 100%;
   width: 100%;
+  border-radius: 0.5rem; /* Rounded corners */
+  border: 1px solid #ccc; /* Light border */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow */
 }

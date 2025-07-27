@@ -49,3 +49,6 @@ export async function switchLanguage(lang) {
 export function getTranslation(key) {
   return currentTranslations[key] || key;
 }
+
+// ✅ Fix: export currentLang for pdf-export.js
+export { currentLang };

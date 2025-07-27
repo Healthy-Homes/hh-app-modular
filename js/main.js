@@ -1,3 +1,4 @@
+// main.js (EN/zh toggle with stable EN PDF export)
 import { loadChecklist } from './checklist-loader.js';
 import { loadSDOH } from './sdoh-loader.js';
 import { setupConsent } from './consent.js';
@@ -8,13 +9,12 @@ import { initializeMap } from './map.js';
 
 console.log('✅ Main.js loaded');
 
-// ✅ Load language immediately
+// ✅ Language setup (loads lang/en.json or lang/zh.json)
 setupLanguage();
 
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('✅ DOM fully loaded');
 
-  // ✅ Consent setup
   setupConsent();
 
   try {
@@ -25,47 +25,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     ]);
     console.log('✅ Checklist, SDOH, and Map loaded');
   } catch (err) {
-    console.error('❌ Error loading components:', err);
-    alert('Error loading app. Please refresh the page.');
-  }
-
-  // ✅ Export logic with pdfMake readiness check
-  const exportBtn = document.getElementById('export-btn');
-  if (!exportBtn) {
-    console.warn('⚠️ Export button not found');
+    console.error('❌ App load failed:', err);
+    alert('App failed to load. Please refresh.');
     return;
   }
 
-  const waitForPdfMake = () => {
-    return new Promise((resolve, reject) => {
-      const maxAttempts = 20;
-      let attempts = 0;
-
-      const check = () => {
-        if (window.pdfMake && typeof window.pdfMake.createPdf === 'function') {
-          return resolve();
-        }
-        attempts++;
-        if (attempts >= maxAttempts) {
-          return reject(new Error('pdfMake failed to load'));
-        }
-        setTimeout(check, 200);
-      };
-
-      check();
-    });
-  };
+  const exportBtn = document.getElementById('export-btn');
+  if (!exportBtn) {
+    console.warn('⚠️ Export button missing');
+    return;
+  }
 
   exportBtn.addEventListener('click', async () => {
     try {
       const bundle = await exportFHIRBundle();
       console.log('✅ FHIR Bundle ready:', bundle);
 
-      await waitForPdfMake(); // ⬅️ Wait until pdfMake is safe to use
-      exportPDF(bundle);      // ✅ Proceed to export
+      if (!window.pdfMake || typeof window.pdfMake.createPdf !== 'function') {
+        console.error('❌ pdfMake is not defined');
+        alert('Unable to generate PDF: pdfMake not loaded.');
+        return;
+      }
+
+      exportPDF(bundle); // 🔧 Currently EN-only for stability
     } catch (err) {
       console.error('❌ Export failed:', err);
-      alert('Unable to generate PDF: pdfMake not loaded.');
+      alert('Unable to generate report.');
     }
   });
 });

@@ -1,51 +1,28 @@
-import { getTranslation, getCurrentLang } from './i18n.js';
 import { exportFHIRBundle } from './fhir-export.js';
 
-export async function exportPDF() {
-  const pdfMake = window.pdfMake; // ✅ Fix for ES module scope
-
-  if (!pdfMake) {
-    console.error('❌ pdfMake not found on window object');
-    alert('PDF generation library not available.');
-    return;
-  }
-
-  const bundle = await exportFHIRBundle();
-
-  if (!bundle?.entry) {
-    console.error('FHIR Bundle is missing or malformed:', bundle);
-    alert('Cannot generate PDF: No export data available.');
-    return;
-  }
+export function exportPDF(bundle) {
+  const pdfMake = window.pdfMake;
+  if (!bundle?.entry) return;
 
   const now = new Date().toLocaleString();
-  const patientEntry = bundle.entry.find(e => e.resource?.resourceType === 'Patient');
-  const consentEntry = bundle.entry.find(e => e.resource?.resourceType === 'Consent');
+  const patient = bundle.entry.find(e => e.resource?.resourceType === 'Patient');
+  const consent = bundle.entry.find(e => e.resource?.resourceType === 'Consent');
   const observations = bundle.entry.filter(e => e.resource?.resourceType === 'Observation');
 
-  const residentName = patientEntry?.resource?.name?.[0]?.text || getTranslation('unnamed');
-  const consentStatus = consentEntry?.resource?.status === 'active'
-    ? getTranslation('consented')
-    : getTranslation('not_consented');
+  const residentName = patient?.resource?.name?.[0]?.text || 'Unnamed Resident';
+  const consentStatus = consent?.resource?.status === 'active' ? 'Yes' : 'No';
 
-  const checklistObs = observations.filter(o =>
-    o.resource.code?.coding?.[0]?.system?.includes('checklist')
-  );
-  const sdohObs = observations.filter(o =>
-    o.resource.code?.coding?.[0]?.system?.includes('loinc')
-  );
-
-  const tableSection = (titleKey, items) => ({
+  const tableSection = (title, items) => ({
     style: 'section',
     table: {
       headerRows: 1,
       widths: ['*', '*'],
       body: [
-        [getTranslation('item'), getTranslation('response')],
+        ['Item', 'Response'],
         ...items.map(obs => [
           obs.resource.code?.text || '',
           obs.resource.valueBoolean !== undefined
-            ? (obs.resource.valueBoolean ? getTranslation('yes') : getTranslation('no'))
+            ? (obs.resource.valueBoolean ? 'Yes' : 'No')
             : obs.resource.valueString || ''
         ])
       ]
@@ -53,16 +30,19 @@ export async function exportPDF() {
     layout: 'lightHorizontalLines'
   });
 
+  const checklist = observations.filter(o => o.resource.code?.coding?.[0]?.system?.includes('checklist'));
+  const sdoh = observations.filter(o => o.resource.code?.coding?.[0]?.system?.includes('loinc'));
+
   const docDefinition = {
     content: [
-      { text: getTranslation('healthyHomesReport'), style: 'header' },
-      { text: `${getTranslation('date')}: ${now}`, style: 'subheader' },
-      { text: `${getTranslation('resident')}: ${residentName}`, style: 'subheader' },
-      { text: `${getTranslation('consent')}: ${consentStatus}`, style: 'subheader' },
+      { text: 'Healthy Homes Inspection Report', style: 'header' },
+      { text: `Date: ${now}`, style: 'subheader' },
+      { text: `Resident: ${residentName}`, style: 'subheader' },
+      { text: `Consent Given: ${consentStatus}`, style: 'subheader' },
       '\n',
-      tableSection('checklist', checklistObs),
+      tableSection('Checklist Observations', checklist),
       '\n',
-      tableSection('sdoh', sdohObs)
+      tableSection('Social Needs (SDOH)', sdoh)
     ],
     styles: {
       header: { fontSize: 18, bold: true },
@@ -71,7 +51,7 @@ export async function exportPDF() {
     },
     defaultStyle: {
       fontSize: 10,
-      font: 'Helvetica' // fallback for basic Latin; Unicode font loaded automatically for others
+      font: 'Helvetica'
     }
   };
 

@@ -1,126 +1,96 @@
-import { getTranslation } from './i18n.js';
+// fhir-export.js
 
 export function exportFHIRBundle() {
-  const now = new Date().toISOString();
+  const bundle = generateFHIRBundle();
+  downloadFHIRJson(bundle);
+  return bundle; // ✅ Now returns the bundle so PDF can reuse it
+}
 
-  const consentCheckbox = document.querySelector('#consent-block input[type="checkbox"]');
-  const nameInput = document.getElementById('resident-name');
-  const checklistItems = document.querySelectorAll('#checklist input[type="checkbox"]');
-  const sdohItems = document.querySelectorAll('#sdoh-form select');
+function generateFHIRBundle() {
+  const name = document.getElementById('resident-name')?.value?.trim() || 'Unnamed';
+  const consent = document.getElementById('consent-checkbox')?.checked || false;
 
-  const residentName = nameInput?.value?.trim() || 'Unnamed Resident';
-  const consentGiven = consentCheckbox?.checked || false;
-  const patientId = 'resident-1';
+  const timestamp = new Date().toISOString();
 
   const bundle = {
     resourceType: 'Bundle',
-    type: 'transaction',
-    identifier: {
-      use: 'official',
-      system: 'https://example.org/healthy-homes',
-      value: `bundle-${Date.now()}-${residentName.replace(/\s+/g, '_')}`
-    },
+    type: 'collection',
     entry: []
   };
 
-  // Patient resource
+  // ✅ Add Patient resource
   bundle.entry.push({
     resource: {
       resourceType: 'Patient',
-      id: patientId,
-      name: [{ text: residentName }]
-    },
-    request: {
-      method: 'POST',
-      url: 'Patient'
+      id: 'resident',
+      name: [{ text: name }],
+      meta: { lastUpdated: timestamp }
     }
   });
 
-  // Consent resource
+  // ✅ Add Consent resource
   bundle.entry.push({
     resource: {
       resourceType: 'Consent',
-      status: consentGiven ? 'active' : 'inactive',
-      patient: { reference: `Patient/${patientId}` },
-      dateTime: now,
-      policyRule: { text: 'Healthy Homes Inspection Consent' },
-      provision: {
-        type: 'permit',
-        actor: [{ role: { text: 'Inspector' }, reference: { display: 'Field Inspector' } }],
-        action: [{ text: 'Observe' }]
-      }
-    },
-    request: {
-      method: 'POST',
-      url: 'Consent'
+      id: 'consent',
+      status: consent ? 'active' : 'inactive',
+      dateTime: timestamp,
+      patient: { reference: 'Patient/resident' }
     }
   });
 
-  // Checklist items → Observations
-  checklistItems.forEach(cb => {
-    if (cb.checked) {
-      const label = cb.dataset.label || cb.name || 'Checklist Item';
-      const code = cb.dataset.code || `checklist-${label.replace(/\s+/g, '-').toLowerCase()}`;
+  // ✅ Checklist Observations
+  document.querySelectorAll('#checklist input[type="checkbox"]').forEach((checkbox, idx) => {
+    const label = checkbox.getAttribute('data-label') || `Item ${idx + 1}`;
+    bundle.entry.push({
+      resource: {
+        resourceType: 'Observation',
+        code: {
+          coding: [{
+            system: 'https://example.org/checklist',
+            code: `chk-${idx + 1}`,
+            display: label
+          }],
+          text: label
+        },
+        valueBoolean: checkbox.checked,
+        effectiveDateTime: timestamp
+      }
+    });
+  });
 
+  // ✅ SDOH Observations
+  document.querySelectorAll('#sdoh-form select, #sdoh-form input').forEach((el, idx) => {
+    const label = el.getAttribute('data-label') || `SDOH ${idx + 1}`;
+    const value = el.value?.trim();
+    if (value) {
       bundle.entry.push({
         resource: {
           resourceType: 'Observation',
-          status: 'final',
           code: {
             coding: [{
-              system: cb.dataset.codeSystem || 'https://example.org/checklist',
-              code: code,
+              system: 'http://loinc.org',
+              code: `sdoh-${idx + 1}`,
               display: label
             }],
             text: label
           },
-          subject: { reference: `Patient/${patientId}` },
-          effectiveDateTime: now,
-          valueBoolean: true
-        },
-        request: {
-          method: 'POST',
-          url: 'Observation'
+          valueString: value,
+          effectiveDateTime: timestamp
         }
       });
     }
   });
 
-  // SDOH form items → Observations
-  sdohItems.forEach(select => {
-    const selectedOption = select.options[select.selectedIndex];
-    const label = select.dataset.label || select.name || 'SDOH Item';
-    const code = select.dataset.code || `sdoh-${label.replace(/\s+/g, '-').toLowerCase()}`;
+  return bundle;
+}
 
-    bundle.entry.push({
-      resource: {
-        resourceType: 'Observation',
-        status: 'final',
-        code: {
-          coding: [{
-            system: select.dataset.codeSystem || 'https://example.org/sdoh',
-            code: code,
-            display: label
-          }],
-          text: label
-        },
-        subject: { reference: `Patient/${patientId}` },
-        effectiveDateTime: now,
-        valueString: selectedOption.textContent
-      },
-      request: {
-        method: 'POST',
-        url: 'Observation'
-      }
-    });
-  });
-
-  // Download the bundle
+function downloadFHIRJson(bundle) {
   const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `healthy-homes-${Date.now()}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'healthy-home-report.json';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
 }

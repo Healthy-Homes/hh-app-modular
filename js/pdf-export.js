@@ -1,6 +1,9 @@
 import { getTranslation, getCurrentLang } from './i18n.js';
 import { exportFHIRBundle } from './fhir-export.js';
 
+// ✅ Bind pdfMake from global scope (required in ES modules)
+const pdfMake = window.pdfMake;
+
 export async function exportPDF() {
   const bundle = await exportFHIRBundle();
 
@@ -63,9 +66,9 @@ export async function exportPDF() {
     },
     defaultStyle: {
       fontSize: 10,
-      font: 'Helvetica' // fallback for basic Latin; Unicode font loaded automatically for others
+      font: 'Helvetica' // system fallback font (non-CJK); CJK fonts handled by vfs_fonts
     }
   };
 
-  window.pdfMake.createPdf(docDefinition).open();
+  pdfMake.createPdf(docDefinition).open();
 }

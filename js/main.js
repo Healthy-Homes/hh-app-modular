@@ -1,4 +1,3 @@
-// main.js
 import { loadChecklist } from './checklist-loader.js';
 import { loadSDOH } from './sdoh-loader.js';
 import { setupConsent } from './consent.js';
@@ -9,17 +8,16 @@ import { initializeMap } from './map.js';
 
 console.log('✅ Main.js loaded');
 
-// ✅ Set up language toggle and default translations immediately
+// ✅ Load language immediately
 setupLanguage();
 
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('✅ DOM fully loaded');
 
-  // ✅ Set up consent logic
+  // ✅ Consent setup
   setupConsent();
 
   try {
-    // ✅ Load checklist, SDOH form, and map in parallel
     await Promise.all([
       loadChecklist(),
       loadSDOH(),
@@ -27,33 +25,47 @@ document.addEventListener('DOMContentLoaded', async () => {
     ]);
     console.log('✅ Checklist, SDOH, and Map loaded');
   } catch (err) {
-    console.error('❌ Error loading modules:', err);
-    alert('Error loading app components. Please refresh the page.');
+    console.error('❌ Error loading components:', err);
+    alert('Error loading app. Please refresh the page.');
+  }
+
+  // ✅ Export logic with pdfMake readiness check
+  const exportBtn = document.getElementById('export-btn');
+  if (!exportBtn) {
+    console.warn('⚠️ Export button not found');
     return;
   }
 
-  // ✅ Wire up export button
-  const exportBtn = document.getElementById('export-btn');
-  if (!exportBtn) {
-    console.warn('⚠️ Export button not found in DOM');
-    return;
-  }
+  const waitForPdfMake = () => {
+    return new Promise((resolve, reject) => {
+      const maxAttempts = 20;
+      let attempts = 0;
+
+      const check = () => {
+        if (window.pdfMake && typeof window.pdfMake.createPdf === 'function') {
+          return resolve();
+        }
+        attempts++;
+        if (attempts >= maxAttempts) {
+          return reject(new Error('pdfMake failed to load'));
+        }
+        setTimeout(check, 200);
+      };
+
+      check();
+    });
+  };
 
   exportBtn.addEventListener('click', async () => {
     try {
-      const bundle = await exportFHIRBundle(); // Generate FHIR bundle
+      const bundle = await exportFHIRBundle();
       console.log('✅ FHIR Bundle ready:', bundle);
 
-      if (!window.pdfMake || typeof window.pdfMake.createPdf !== 'function') {
-        console.error('❌ pdfMake not available or broken');
-        alert('Unable to generate PDF: pdfMake not loaded.');
-        return;
-      }
-
-      exportPDF(bundle); // Trigger PDF export and preview
+      await waitForPdfMake(); // ⬅️ Wait until pdfMake is safe to use
+      exportPDF(bundle);      // ✅ Proceed to export
     } catch (err) {
-      console.error('❌ Export process failed:', err);
-      alert('Export failed. Please try again.');
+      console.error('❌ Export failed:', err);
+      alert('Unable to generate PDF: pdfMake not loaded.');
     }
   });
 });

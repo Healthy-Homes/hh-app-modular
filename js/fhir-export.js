@@ -3,13 +3,12 @@
 export function exportFHIRBundle() {
   const bundle = generateFHIRBundle();
   downloadFHIRJson(bundle);
-  return bundle; // ✅ Now returns the bundle so PDF can reuse it
+  return bundle; // ✅ Returned for PDF export
 }
 
 function generateFHIRBundle() {
   const name = document.getElementById('resident-name')?.value?.trim() || 'Unnamed';
   const consent = document.getElementById('consent-checkbox')?.checked || false;
-
   const timestamp = new Date().toISOString();
 
   const bundle = {
@@ -18,7 +17,7 @@ function generateFHIRBundle() {
     entry: []
   };
 
-  // ✅ Add Patient resource
+  // ✅ Patient Resource
   bundle.entry.push({
     resource: {
       resourceType: 'Patient',
@@ -28,7 +27,7 @@ function generateFHIRBundle() {
     }
   });
 
-  // ✅ Add Consent resource
+  // ✅ Consent Resource
   bundle.entry.push({
     resource: {
       resourceType: 'Consent',
@@ -92,5 +91,5 @@ function downloadFHIRJson(bundle) {
   link.download = 'healthy-home-report.json';
   document.body.appendChild(link);
   link.click();
-  link.remove();
+  document.body.removeChild(link); // ✅ Clean up
 }

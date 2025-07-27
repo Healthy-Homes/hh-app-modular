@@ -1,29 +1,32 @@
-// js/map.js
 import L from 'https://cdn.skypack.dev/leaflet';
 
 export async function initializeMap() {
-  const mapSection = document.getElementById('map-section');
+  const mapElement = document.getElementById('map');
+  if (!mapElement) {
+    console.error('Map element not found!');
+    return;
+  }
 
-  // Add map container div
-  mapSection.innerHTML = `<div id="map" class="w-full h-[400px] rounded shadow"></div>`;
+  // Initialize map with fallback center
+  const fallbackCoords = [25.0423, 121.5315]; // Near NTU
+  const map = L.map('map').setView(fallbackCoords, 15);
 
-  // Initialize map
-  const map = L.map('map').setView([25.0423, 121.5315], 15); // Default center near NTU
-
-  // Add OpenStreetMap tile layer
+  // Add OpenStreetMap tiles
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
 
-  // Try to center map on user location
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        const { latitude, longitude } = position.coords;
-        map.setView([latitude, longitude], 16);
-      },
-      () => console.warn('Geolocation permission denied or failed.')
-    );
+  // Try to center on user's actual location
+  if ('geolocation' in navigator) {
+    try {
+      const position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
+      });
+      const { latitude, longitude } = position.coords;
+      map.setView([latitude, longitude], 16);
+    } catch (err) {
+      console.warn('Geolocation error or denied, using fallback location.');
+    }
   }
 
   // Load mock GeoJSON environmental risk data
@@ -31,7 +34,6 @@ export async function initializeMap() {
     const res = await fetch('data/mock-risk-area.geojson');
     const geojson = await res.json();
 
-    // Add colored polygon layer
     const riskLayer = L.geoJSON(geojson, {
       style: feature => ({
         color: 'red',

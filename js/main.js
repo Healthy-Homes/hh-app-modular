@@ -7,15 +7,19 @@ import { initializeMap } from './map.js';
 
 console.log('Main.js loaded');
 
-// ✅ Initialize language toggle and load default translations
+// ✅ Initialize language toggle and load default translations immediately
 setupLanguage();
 
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('DOM fully loaded');
   setupConsent();
-  await loadChecklist();
-  await loadSDOH();
-  await initializeMap();
+
+  // ✅ Run core loading tasks in parallel to avoid delay
+  await Promise.all([
+    loadChecklist(),
+    loadSDOH(),
+    initializeMap()
+  ]);
 
   // ✅ Wire up export button
   const exportBtn = document.getElementById('export-btn');

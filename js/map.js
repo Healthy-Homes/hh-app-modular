@@ -85,18 +85,21 @@ export function initializeMap() {
           }
         });
 
-        // Add a simple custom legend
-        const legend = document.createElement('div');
-        legend.innerHTML = `
-          <div class="bg-white p-2 text-sm shadow rounded flex items-center space-x-2 border border-gray-300">
-            <span class="inline-block w-4 h-4 bg-red-500 opacity-50 border"></span>
-            <span>High Risk Area</span>
-          </div>`;
-        legend.style.position = 'absolute';
-        legend.style.bottom = '12px';
-        legend.style.right = '12px';
-        legend.style.zIndex = '999';
-        mapContainer.appendChild(legend);
+        // Prevent duplicate legends
+        if (!document.getElementById('risk-legend')) {
+          const legend = document.createElement('div');
+          legend.id = 'risk-legend';
+          legend.innerHTML = `
+            <div class="bg-white p-2 text-sm shadow rounded flex items-center space-x-2 border border-gray-300">
+              <span class="inline-block w-4 h-4 bg-red-500 opacity-50 border"></span>
+              <span>High Risk Area</span>
+            </div>`;
+          legend.style.position = 'absolute';
+          legend.style.bottom = '12px';
+          legend.style.right = '12px';
+          legend.style.zIndex = '999';
+          mapContainer.appendChild(legend);
+        }
 
         console.log('Mock risk polygon loaded');
       } catch (err) {

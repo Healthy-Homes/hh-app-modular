@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Healthy Homes Practitioner App</title>
 
-  <!-- Tailwind CDN for development -->
+  <!-- Tailwind CDN for development (not for production use) -->
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- MapLibre CSS -->
@@ -14,9 +14,9 @@
   <!-- Optional custom tweaks -->
   <link rel="stylesheet" href="css/styles.css" />
 
-  <!-- ✅ PDFMake with built-in Roboto fonts -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+  <!-- ✅ PDFMake with CJK font support -->
+  <script src="https://cdn.jsdelivr.net/npm/pdfmake-unicode@1.0.3/build/pdfmake.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfmake-unicode@1.0.3/build/vfs_fonts.js"></script>
 
   <!-- Main JS entry point -->
   <script type="module" src="js/main.js"></script>

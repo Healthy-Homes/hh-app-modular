@@ -62,7 +62,8 @@ export async function exportPDF() {
       section: { margin: [0, 8] }
     },
     defaultStyle: {
-      fontSize: 10 // No font specified: fallback to built-in Roboto or system
+      font: 'NotoSansCJKtc', // ✅ CJK-capable font
+      fontSize: 10
     }
   };
 

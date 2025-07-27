@@ -62,10 +62,10 @@ export async function exportPDF() {
       section: { margin: [0, 8] }
     },
     defaultStyle: {
-      font: 'NotoSansCJKtc', // ✅ CJK-capable font
-      fontSize: 10
+      fontSize: 10,
+      font: 'Helvetica' // fallback for basic Latin; Unicode font loaded automatically for others
     }
   };
 
-  pdfMake.createPdf(docDefinition).open();
+  window.pdfMake.createPdf(docDefinition).open();
 }

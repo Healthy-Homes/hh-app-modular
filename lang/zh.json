@@ -2,6 +2,23 @@
   "consent_text": "我同意接受居家健康檢查，了解這是自願性的，並同意可以拍照作為紀錄用途。",
   "export_button": "匯出報告",
 
+  "resident_name_label": "住戶姓名",
+  "resident_name_placeholder": "請輸入住戶姓名",
+
+  "healthyHomesReport": "健康住宅檢查報告",
+  "resident": "住戶",
+  "consent": "同意狀態",
+  "consented": "已同意",
+  "not_consented": "未同意",
+  "checklist": "檢查項目觀察",
+  "sdoh": "社會需求（SDOH）",
+  "yes": "是",
+  "no": "否",
+  "item": "項目",
+  "response": "回覆",
+  "date": "日期",
+  "unnamed": "未命名住戶",
+
   "label_moldVisible": "黴菌",
   "desc_moldVisible": "可見黴菌或潮濕",
   "label_leakingPipes": "水損或漏水",
@@ -104,9 +121,5 @@
   "languageBarrier_label": "您是否需要翻譯人員與醫療服務提供者溝通？",
   "languageBarrier_opt1": "需要",
   "languageBarrier_opt2": "不需要",
-  "languageBarrier_opt3": "有時需要",
-  
-  "resident_name_label": "住戶姓名",
-"resident_name_placeholder": "請輸入住戶姓名"
-
+  "languageBarrier_opt3": "有時需要"
 }

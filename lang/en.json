@@ -2,6 +2,23 @@
   "consent_text": "I consent to a home inspection to assess health and safety conditions, understand this is voluntary, and agree that photos may be taken for documentation purposes.",
   "export_button": "Export Report",
 
+  "resident_name_label": "Resident Name",
+  "resident_name_placeholder": "Enter resident name",
+
+  "healthyHomesReport": "Healthy Homes Inspection Report",
+  "resident": "Resident",
+  "consent": "Consent",
+  "consented": "Yes, consent given",
+  "not_consented": "No, consent not given",
+  "checklist": "Checklist Observations",
+  "sdoh": "Social Needs (SDOH)",
+  "yes": "Yes",
+  "no": "No",
+  "item": "Item",
+  "response": "Response",
+  "date": "Date",
+  "unnamed": "Unnamed Resident",
+
   "label_moldVisible": "Mold",
   "desc_moldVisible": "Visible mold or moisture",
   "label_leakingPipes": "Water damage or leaks",
@@ -104,9 +121,5 @@
   "languageBarrier_label": "Do you need an interpreter to communicate with healthcare providers?",
   "languageBarrier_opt1": "Yes",
   "languageBarrier_opt2": "No",
-  "languageBarrier_opt3": "Sometimes",
-  
-  "resident_name_label": "Resident Name",
-"resident_name_placeholder": "Enter resident name"
-
+  "languageBarrier_opt3": "Sometimes"
 }

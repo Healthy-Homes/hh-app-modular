@@ -3,6 +3,7 @@ import { loadSDOH } from './sdoh-loader.js';
 import { setupConsent } from './consent.js';
 import { setupLanguage } from './i18n.js';
 import { exportFHIRBundle } from './fhir-export.js';
+import { exportPDF } from './pdf-export.js';
 import { initializeMap } from './map.js';
 
 console.log('Main.js loaded');
@@ -21,9 +22,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     initializeMap()
   ]);
 
-  // ✅ Wire up export button
+  // ✅ Wire up export button for JSON + PDF
   const exportBtn = document.getElementById('export-btn');
   if (exportBtn) {
-    exportBtn.addEventListener('click', exportFHIRBundle);
+    exportBtn.addEventListener('click', () => {
+      const bundle = exportFHIRBundle(); // JSON + download
+      exportPDF(bundle);                 // Preview PDF
+    });
   }
 });

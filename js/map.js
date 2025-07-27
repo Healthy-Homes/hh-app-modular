@@ -7,7 +7,7 @@ export function initializeMap() {
     return;
   }
 
-  const fallbackCoords = [121.5315, 25.0423]; // [lng, lat] near NTU
+  const fallbackCoords = [121.5315, 25.0423]; // NTU
 
   requestAnimationFrame(() => {
     const map = new maplibregl.Map({
@@ -36,39 +36,33 @@ export function initializeMap() {
       zoom: 15
     });
 
-    // Add navigation controls
     map.addControl(new maplibregl.NavigationControl());
 
-    // Geolocation (if allowed)
+    // Geolocation support
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         ({ coords }) => {
           map.setCenter([coords.longitude, coords.latitude]);
           map.setZoom(16);
         },
-        () => console.warn('Geolocation failed, using fallback'),
+        () => console.warn('Geolocation failed'),
         { timeout: 8000 }
       );
     }
 
-    // On map load
     map.on('load', async () => {
       try {
         const res = await fetch('data/mock-risk-area.geojson');
         const data = await res.json();
 
-        // Add GeoJSON source and polygon layers
-        map.addSource('risk-area', {
-          type: 'geojson',
-          data
-        });
+        map.addSource('risk-area', { type: 'geojson', data });
 
         map.addLayer({
           id: 'risk-polygon',
           type: 'fill',
           source: 'risk-area',
           paint: {
-            'fill-color': '#f87171',  // red-400
+            'fill-color': '#f87171',
             'fill-opacity': 0.4
           }
         });
@@ -78,16 +72,16 @@ export function initializeMap() {
           type: 'line',
           source: 'risk-area',
           paint: {
-            'line-color': '#b91c1c', // red-800
+            'line-color': '#b91c1c',
             'line-width': 2
           }
         });
 
-        // Remove existing legend if present
-        const oldLegend = mapContainer.querySelector('.custom-map-legend');
-        if (oldLegend) oldLegend.remove();
+        // ✅ Remove any existing risk legends, anywhere in the DOM
+        const existingLegends = document.querySelectorAll('.custom-map-legend');
+        existingLegends.forEach(el => el.remove());
 
-        // Create legend
+        // ✅ Add clean new legend
         const legend = document.createElement('div');
         legend.className = 'custom-map-legend';
         legend.innerHTML = `
@@ -101,9 +95,9 @@ export function initializeMap() {
           right: '12px',
           zIndex: '999'
         });
-        mapContainer.appendChild(legend);
 
-        console.log('Mock risk polygon loaded');
+        mapContainer.appendChild(legend);
+        console.log('Mock risk polygon loaded with clean legend');
       } catch (err) {
         console.error('Failed to load GeoJSON risk data:', err);
       }

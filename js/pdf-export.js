@@ -62,8 +62,7 @@ export async function exportPDF() {
       section: { margin: [0, 8] }
     },
     defaultStyle: {
-      font: undefined, // Use default font family chain (includes Roboto + fallback)
-      fontSize: 10
+      fontSize: 10 // No font specified: fallback to built-in Roboto or system
     }
   };
 

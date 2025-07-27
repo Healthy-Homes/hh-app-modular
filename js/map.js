@@ -1,95 +1,71 @@
 import L from 'https://cdn.skypack.dev/leaflet';
 
-export async function initializeMap() {
+export function initializeMap() {
   const mapContainer = document.getElementById('map');
-  if (!mapContainer) {
-    console.error('Map element not found!');
+  const sectionContainer = document.getElementById('map-section');
+
+  if (!mapContainer || !sectionContainer) {
+    console.error('Map or container not found!');
     return;
   }
 
-  // This wraps the real map initialization logic
-  const setupMap = async () => {
-    const fallbackCoords = [25.0423, 121.5315];
-    const map = L.map('map', {
-      center: fallbackCoords,
-      zoom: 15,
-      scrollWheelZoom: false,
-      doubleClickZoom: false,
-      boxZoom: true,
-      dragging: true,
-    });
-
-    // Add tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors',
-    }).addTo(map);
-
-    // Try geolocation
-    if ('geolocation' in navigator) {
-      try {
-        const position = await new Promise((resolve, reject) =>
-          navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 })
-        );
-        const { latitude, longitude } = position.coords;
-        map.setView([latitude, longitude], 16);
-      } catch {
-        console.warn('Geolocation failed, using fallback.');
-      }
-    }
-
-    // Load mock GeoJSON
-    try {
-      const res = await fetch('data/mock-risk-area.geojson');
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const geojson = await res.json();
-
-      L.geoJSON(geojson, {
-        style: feature => ({
-          color: 'red',
-          weight: 2,
-          fillOpacity: 0.4,
-        }),
-        onEachFeature: (feature, layer) => {
-          const desc = feature.properties?.description || 'Environmental risk area';
-          layer.bindPopup(desc);
-        },
-      }).addTo(map);
-
-      // Legend
-      const legend = L.control({ position: 'bottomright' });
-      legend.onAdd = function () {
-        const div = L.DomUtil.create('div');
-        div.style.background = 'white';
-        div.style.padding = '6px';
-        div.style.fontSize = '14px';
-        div.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-        div.style.borderRadius = '6px';
-        div.innerHTML = `
-          <div style="display: flex; align-items: center;">
-            <div style="width: 16px; height: 16px; background-color: rgba(255, 0, 0, 0.5); border: 1px solid #000; margin-right: 6px;"></div>
-            <span>High-Risk Area</span>
-          </div>`;
-        return div;
-      };
-      legend.addTo(map);
-    } catch (err) {
-      console.error('Failed to load mock risk data:', err);
-    }
-
-    // Ensure map tiles redraw correctly
-    setTimeout(() => map.invalidateSize(), 100);
-  };
-
-  // Use ResizeObserver to detect when the container is ready
   const observer = new ResizeObserver(entries => {
     for (let entry of entries) {
-      if (entry.contentRect.height > 0) {
-        setupMap(); // Only run once
-        observer.disconnect();
-        break;
+      const { width, height } = entry.contentRect;
+      if (width > 0 && height > 0) {
+        observer.disconnect(); // Stop watching once we know it has size
+
+        // Fallback location (NTU)
+        const fallbackCoords = [25.0423, 121.5315];
+        const map = L.map(mapContainer).setView(fallbackCoords, 15);
+
+        // Base layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Try to geolocate
+        if ('geolocation' in navigator) {
+          navigator.geolocation.getCurrentPosition(pos => {
+            const { latitude, longitude } = pos.coords;
+            map.setView([latitude, longitude], 16);
+          }, () => {
+            console.warn('Geolocation failed; using fallback');
+          }, { timeout: 8000 });
+        }
+
+        // Load mock GeoJSON
+        fetch('data/mock-risk-area.geojson')
+          .then(res => res.json())
+          .then(geojson => {
+            L.geoJSON(geojson, {
+              style: {
+                color: 'red',
+                weight: 2,
+                fillOpacity: 0.4
+              },
+              onEachFeature: (feature, layer) => {
+                const desc = feature.properties?.description || 'Environmental risk area';
+                layer.bindPopup(desc);
+              }
+            }).addTo(map);
+
+            // Add Legend
+            const legend = L.control({ position: 'bottomright' });
+            legend.onAdd = function () {
+              const div = L.DomUtil.create('div', 'bg-white p-2 text-sm shadow rounded');
+              div.innerHTML = `<div class="flex items-center">
+                <div class="w-4 h-4 bg-red-500 opacity-50 mr-2 border"></div>
+                <span>High-Risk Area</span>
+              </div>`;
+              return div;
+            };
+            legend.addTo(map);
+          })
+          .catch(err => console.error('Failed to load GeoJSON:', err));
       }
     }
   });
 
-  observer.observe(mapContainer);
+  observer.observe(sectionContainer);
 }

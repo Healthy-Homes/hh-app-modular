@@ -1,4 +1,3 @@
-// js/map.js
 import L from 'https://cdn.skypack.dev/leaflet';
 
 export async function initializeMap() {
@@ -8,17 +7,22 @@ export async function initializeMap() {
     return;
   }
 
-  // Initialize map with default center near NTU
   const fallbackCoords = [25.0423, 121.5315];
   const map = L.map('map', {
     center: fallbackCoords,
     zoom: 15,
-    scrollWheelZoom: false, // Prevent zooming on scroll
-    doubleClickZoom: false, // Optional: disable double-click zoom
-    boxZoom: false
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    boxZoom: true, // Optional
+    dragging: true
   });
 
-  // Add OpenStreetMap tile layer
+  // Ensure proper map sizing after render
+  setTimeout(() => {
+    map.invalidateSize();
+  }, 300); // Delay long enough for layout to settle
+
+  // Add tiles
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
@@ -31,19 +35,18 @@ export async function initializeMap() {
       );
       const { latitude, longitude } = position.coords;
       map.setView([latitude, longitude], 16);
-    } catch (err) {
-      console.warn('Geolocation failed or denied, using fallback.');
+    } catch {
+      console.warn('Geolocation failed, using fallback.');
     }
   }
 
-  // Load mock GeoJSON data
+  // Load risk area
   try {
     const res = await fetch('data/mock-risk-area.geojson');
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const geojson = await res.json();
 
-    // Add risk layer
-    const riskLayer = L.geoJSON(geojson, {
+    L.geoJSON(geojson, {
       style: feature => ({
         color: 'red',
         weight: 2,
@@ -55,7 +58,7 @@ export async function initializeMap() {
       }
     }).addTo(map);
 
-    // Add legend
+    // Legend
     const legend = L.control({ position: 'bottomright' });
     legend.onAdd = function () {
       const div = L.DomUtil.create('div');

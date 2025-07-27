@@ -92,7 +92,7 @@ export function initializeMap() {
         Object.assign(legend.style, {
           position: 'absolute',
           bottom: '12px',
-          right: '12px',
+          left: '12px',
           zIndex: '999'
         });
 

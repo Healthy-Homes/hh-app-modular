@@ -1,0 +1,22 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "riskLevel": "High",
+        "description": "Mock PM2.5 risk zone"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [121.5315, 25.0423],
+          [121.5330, 25.0423],
+          [121.5330, 25.0438],
+          [121.5315, 25.0438],
+          [121.5315, 25.0423]
+        ]]
+      }
+    }
+  ]
+}

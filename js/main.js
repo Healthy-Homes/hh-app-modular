@@ -12,15 +12,16 @@ console.log('✅ Main.js loaded');
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('✅ DOM fully loaded');
 
-  setupLanguage();
-  setupConsent();
-
   try {
+    setupLanguage();     // ✅ Sets up language toggle and default
+    setupConsent();      // ✅ Loads consent fields
+
     await Promise.all([
       loadChecklist(),
       loadSDOH(),
       initializeMap()
     ]);
+
     console.log('✅ Checklist, SDOH, and Map loaded');
   } catch (err) {
     console.error('❌ App load failed:', err);
@@ -34,15 +35,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // ✅ Wait for pdfMake to be ready before allowing export
   exportBtn.addEventListener('click', async () => {
     try {
       const bundle = await exportFHIRBundle();
       console.log('✅ FHIR Bundle ready:', bundle);
 
-      await waitForPdfMake(); // ⏳ Ensures safe PDF export
+      await waitForPdfMake(); // ⏳ Confirm library is available
 
-      exportPDF(bundle); // 🔧 Currently EN-only
+      exportPDF(bundle);      // 🧾 Generate English-only PDF
     } catch (err) {
       console.error('❌ Export failed:', err);
       alert('Unable to generate report.');
@@ -50,19 +50,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 });
 
-// ✅ Wait for global pdfMake to load before accessing it
+// ✅ Wait for pdfMake to become available in global scope
 function waitForPdfMake() {
   return new Promise((resolve, reject) => {
     let attempts = 0;
-    const max = 30; // ~6 seconds
+    const maxAttempts = 30; // ~6 seconds
     const interval = setInterval(() => {
       if (window.pdfMake && typeof window.pdfMake.createPdf === 'function') {
         clearInterval(interval);
-        console.log('✅ pdfMake loaded');
+        console.log('✅ pdfMake loaded and ready');
         resolve();
-      } else if (++attempts >= max) {
+      } else if (++attempts >= maxAttempts) {
         clearInterval(interval);
-        reject(new Error('❌ pdfMake failed to load.'));
+        reject(new Error('❌ pdfMake failed to load after multiple attempts'));
       }
     }, 200);
   });

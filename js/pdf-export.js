@@ -1,14 +1,25 @@
 // pdf-export.js
 
+// ✅ Make pdfMake accessible in module scope
+const pdfMake = window.pdfMake;
+
 export function exportPDF(bundle) {
   try {
     console.log('📦 Bundle received in exportPDF:', bundle);
 
-    // Minimal test to verify pdfMake is working
     const docDefinition = {
       content: [
-        { text: 'Healthy Homes Report (EN PDF Test)', fontSize: 18, bold: true, margin: [0, 0, 0, 10] },
-        { text: 'FHIR Bundle Summary:', fontSize: 14, margin: [0, 10, 0, 5] },
+        {
+          text: 'Healthy Homes Report (EN PDF Test)',
+          fontSize: 18,
+          bold: true,
+          margin: [0, 0, 0, 10]
+        },
+        {
+          text: 'FHIR Bundle Summary:',
+          fontSize: 14,
+          margin: [0, 10, 0, 5]
+        },
         {
           ul: [
             `Resource Type: ${bundle.resourceType || 'Unknown'}`,
@@ -33,12 +44,13 @@ export function exportPDF(bundle) {
       ]
     };
 
-    // 🔧 pdfMake must be global
-    if (!window.pdfMake || typeof window.pdfMake.createPdf !== 'function') {
-      throw new Error('❌ pdfMake not available');
+    // ✅ Validate access to pdfMake
+    if (!pdfMake || typeof pdfMake.createPdf !== 'function') {
+      throw new Error('❌ pdfMake not available (scoped import check)');
     }
 
-    window.pdfMake.createPdf(docDefinition).open();
+    // ✅ Trigger PDF download
+    pdfMake.createPdf(docDefinition).open();
     console.log('✅ PDF generation triggered');
   } catch (err) {
     console.error('❌ Error inside exportPDF():', err);

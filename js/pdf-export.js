@@ -62,7 +62,7 @@ export async function exportPDF() {
       section: { margin: [0, 8] }
     },
     defaultStyle: {
-      // Use default system font and let it fall back naturally to CJK-compatible fonts
+      font: undefined, // Use default font family chain (includes Roboto + fallback)
       fontSize: 10
     }
   };

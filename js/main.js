@@ -12,11 +12,7 @@ console.log('✅ Main.js loaded');
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('✅ DOM fully loaded');
 
-  setupLanguage(); // ✅ moved inside DOM ready
-  setupConsent();
-  
-  // ... (rest of your logic follows)
-
+  setupLanguage(); // Loads lang file, sets toggle, and runs setupConsent()
 
   try {
     await Promise.all([
@@ -48,7 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
       }
 
-      exportPDF(bundle); // 🔧 Currently EN-only for stability
+      exportPDF(bundle); // 🧪 Still using English labels only
     } catch (err) {
       console.error('❌ Export failed:', err);
       alert('Unable to generate report.');

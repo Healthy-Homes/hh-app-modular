@@ -7,6 +7,11 @@ let currentTranslations = {};
 
 export function setupLanguage() {
   const toggle = document.getElementById('language-toggle');
+  if (!toggle) {
+    console.warn('⚠️ #language-toggle element not found in DOM');
+    return;
+  }
+
   toggle.innerHTML = `
     <button id="lang-en" class="bg-gray-200 px-3 py-1 rounded mr-2">English</button>
     <button id="lang-zh" class="bg-gray-200 px-3 py-1 rounded">中文</button>
@@ -23,27 +28,32 @@ export async function switchLanguage(lang) {
 
   try {
     const res = await fetch(`lang/${lang}.json`);
+    if (!res.ok) throw new Error(`Could not load lang/${lang}.json`);
     currentTranslations = await res.json();
-
-    // Update static UI elements
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-      const key = el.getAttribute('data-i18n');
-      if (currentTranslations[key]) el.textContent = currentTranslations[key];
-    });
-
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-      const key = el.getAttribute('data-i18n-placeholder');
-      if (currentTranslations[key]) el.setAttribute('placeholder', currentTranslations[key]);
-    });
-
-    // Reload dynamic content
-    await loadChecklist();
-    await loadSDOH();
-    setupConsent();
-
   } catch (err) {
-    console.error(`Language load failed for ${lang}`, err);
+    console.error(`⚠️ Failed to load ${lang} language file, falling back to English`, err);
+    if (lang !== 'en') {
+      currentLang = 'en';
+      const res = await fetch('lang/en.json');
+      currentTranslations = await res.json();
+    }
   }
+
+  // Apply translations to static UI
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (currentTranslations[key]) el.textContent = currentTranslations[key];
+  });
+
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (currentTranslations[key]) el.setAttribute('placeholder', currentTranslations[key]);
+  });
+
+  // Reload dynamic content
+  await loadChecklist();
+  await loadSDOH();
+  setupConsent();
 }
 
 export function getTranslation(key) {

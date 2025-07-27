@@ -8,26 +8,26 @@ export async function initializeMap() {
   }
 
   const fallbackCoords = [25.0423, 121.5315];
-  const map = L.map('map', {
+  const map = L.map(mapElement, {
     center: fallbackCoords,
     zoom: 15,
-    scrollWheelZoom: false,
-    doubleClickZoom: false,
-    boxZoom: true, // Optional
+    scrollWheelZoom: true,
+    doubleClickZoom: true,
+    boxZoom: true,
     dragging: true
   });
 
-  // Ensure proper map sizing after render
+  // Ensure layout settles before initializing fully
   setTimeout(() => {
     map.invalidateSize();
-  }, 300); // Delay long enough for layout to settle
+  }, 500);
 
   // Add tiles
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
 
-  // Try geolocation
+  // Try to use real location
   if ('geolocation' in navigator) {
     try {
       const position = await new Promise((resolve, reject) =>
@@ -36,18 +36,18 @@ export async function initializeMap() {
       const { latitude, longitude } = position.coords;
       map.setView([latitude, longitude], 16);
     } catch {
-      console.warn('Geolocation failed, using fallback.');
+      console.warn('Geolocation failed; using fallback.');
     }
   }
 
-  // Load risk area
+  // Load mock GeoJSON risk area
   try {
     const res = await fetch('data/mock-risk-area.geojson');
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const geojson = await res.json();
 
     L.geoJSON(geojson, {
-      style: feature => ({
+      style: () => ({
         color: 'red',
         weight: 2,
         fillOpacity: 0.4
@@ -58,10 +58,10 @@ export async function initializeMap() {
       }
     }).addTo(map);
 
-    // Legend
+    // Add legend
     const legend = L.control({ position: 'bottomright' });
     legend.onAdd = function () {
-      const div = L.DomUtil.create('div');
+      const div = L.DomUtil.create('div', 'leaflet-control legend');
       div.style.background = 'white';
       div.style.padding = '6px';
       div.style.fontSize = '14px';

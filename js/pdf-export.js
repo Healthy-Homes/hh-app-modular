@@ -1,8 +1,8 @@
 import { getTranslation, getCurrentLang } from './i18n.js';
-import { generateFHIRBundle } from './fhir-export.js';
+import { exportFHIRBundle } from './fhir-export.js'; // ✅ Corrected import
 
 export async function exportPDF() {
-  const bundle = await generateFHIRBundle();
+  const bundle = await exportFHIRBundle(); // ✅ Matches correct function
 
   if (!bundle || !bundle.entry) {
     console.error('FHIR Bundle is missing or malformed:', bundle);

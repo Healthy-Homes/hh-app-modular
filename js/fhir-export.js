@@ -1,5 +1,3 @@
-// fhir-export.js
-
 export function exportFHIRBundle() {
   const bundle = generateFHIRBundle();
   downloadFHIRJson(bundle);
@@ -58,10 +56,18 @@ function generateFHIRBundle() {
     });
   });
 
-  // ✅ SDOH Observations
+  // ✅ SDOH Observations (fix: store human-readable text)
   document.querySelectorAll('#sdoh-form select, #sdoh-form input').forEach((el, idx) => {
     const label = el.getAttribute('data-label') || `SDOH ${idx + 1}`;
-    const value = el.value?.trim();
+    let value = '';
+
+    if (el.tagName === 'SELECT') {
+      const selectedOption = el.options[el.selectedIndex];
+      value = selectedOption?.text || '';
+    } else {
+      value = el.value?.trim();
+    }
+
     if (value) {
       bundle.entry.push({
         resource: {

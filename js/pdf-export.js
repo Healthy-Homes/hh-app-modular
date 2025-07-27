@@ -1,19 +1,18 @@
-import { getTranslation } from './i18n.js';
+import { getTranslation, getCurrentLang } from './i18n.js';
 import { exportFHIRBundle } from './fhir-export.js';
 
 export async function exportPDF() {
-  const pdfMake = window.pdfMake; // ✅ Required for ES module context
-
-  if (!pdfMake?.createPdf) {
-    console.error('pdfMake is not properly loaded');
-    alert('PDF generation failed. Please try again.');
+  const pdfMakeInstance = window.pdfMake;
+  if (!pdfMakeInstance || !pdfMakeInstance.createPdf) {
+    console.error('❌ pdfMake is not available on window.');
+    alert('Unable to generate PDF: pdfMake library not loaded.');
     return;
   }
 
   const bundle = await exportFHIRBundle();
 
   if (!bundle?.entry) {
-    console.error('FHIR Bundle is missing or malformed:', bundle);
+    console.error('❌ FHIR Bundle is missing or malformed:', bundle);
     alert('Cannot generate PDF: No export data available.');
     return;
   }
@@ -71,9 +70,9 @@ export async function exportPDF() {
     },
     defaultStyle: {
       fontSize: 10,
-      font: 'Helvetica'
+      font: 'Roboto' // Unicode-safe font supported by pdfmake-unicode
     }
   };
 
-  pdfMake.createPdf(docDefinition).open();
+  pdfMakeInstance.createPdf(docDefinition).open();
 }

@@ -14,11 +14,11 @@
   <!-- Optional custom tweaks -->
   <link rel="stylesheet" href="css/styles.css" />
 
-  <!-- ✅ PDFMake with CJK font support -->
+  <!-- ✅ PDFMake with Unicode + CJK font support -->
   <script src="https://cdn.jsdelivr.net/npm/pdfmake-unicode@1.0.3/build/pdfmake.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pdfmake-unicode@1.0.3/build/vfs_fonts.js"></script>
   <script>
-    // ✅ Expose to modules AFTER pdfMake is defined
+    // ✅ Expose pdfMake globally so it's usable in ES modules
     window.pdfMake = pdfMake;
   </script>
 
@@ -55,7 +55,7 @@
 
     <!-- Map Section -->
     <section id="map-section" class="mt-4 relative">
-      <div id="map"></div>
+      <div id="map" class="h-64 w-full rounded shadow"></div>
     </section>
 
     <!-- Export Buttons -->

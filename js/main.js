@@ -25,9 +25,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   // ✅ Wire up export button for JSON + PDF
   const exportBtn = document.getElementById('export-btn');
   if (exportBtn) {
-    exportBtn.addEventListener('click', () => {
-      const bundle = exportFHIRBundle(); // JSON + download
-      exportPDF(bundle);                 // Preview PDF
+    exportBtn.addEventListener('click', async () => {
+      const bundle = await exportFHIRBundle(); // ✅ Wait for bundle
+      exportPDF(bundle);                       // ✅ Now pass actual bundle
     });
   }
 });

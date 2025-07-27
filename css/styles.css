@@ -4,12 +4,15 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  background-color: #f3f4f6; /* Tailwind gray-100 equivalent */
 }
 
 /* Main layout container */
 main {
   position: relative;
   z-index: 0;
+  padding: 1rem;
+  max-width: 100%;
 }
 
 /* Map section container */
@@ -19,6 +22,9 @@ main {
   height: 400px;
   overflow: hidden;
   z-index: 1;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+  background-color: #e5f3ff; /* Soft background for load transition */
 }
 
 /* Map container for MapLibre */
@@ -27,8 +33,6 @@ main {
   width: 100%;
   display: block;
   border-radius: 0.5rem;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* MapLibre control visibility */
@@ -36,13 +40,44 @@ main {
   z-index: 500 !important;
 }
 
-/* Optional: Popup content styling */
+/* Crisp canvas rendering */
+.maplibregl-canvas {
+  image-rendering: auto;
+}
+
+/* Popup content styling */
 .maplibregl-popup-content {
   font-size: 0.875rem;
   line-height: 1.25rem;
 }
 
-/* Optional: Crisp rendering on zoom/pan */
-.maplibregl-canvas {
-  image-rendering: auto;
+/* Risk polygon layer (if using CSS-based overlay, future proofing) */
+.risk-polygon-high {
+  fill: rgba(255, 0, 0, 0.4);
+  stroke: rgba(255, 0, 0, 0.8);
+  stroke-width: 2;
+}
+
+/* Legend container */
+#map-legend {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  z-index: 600;
+}
+
+/* Legend color box */
+.legend-color {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
+  border: 1px solid #333;
+  vertical-align: middle;
 }

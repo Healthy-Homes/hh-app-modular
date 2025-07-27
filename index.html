@@ -16,11 +16,11 @@
 
   <!-- ✅ PDFMake with CJK font support -->
   <script src="https://cdn.jsdelivr.net/npm/pdfmake-unicode@1.0.3/build/pdfmake.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfmake-unicode@1.0.3/build/vfs_fonts.js"></script>
   <script>
-    // ✅ Expose to modules
+    // ✅ Expose to modules AFTER pdfMake is defined
     window.pdfMake = pdfMake;
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/pdfmake-unicode@1.0.3/build/vfs_fonts.js"></script>
 
   <!-- Main JS entry point -->
   <script type="module" src="js/main.js"></script>

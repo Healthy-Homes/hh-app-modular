@@ -94,7 +94,7 @@ export function initializeMap() {
           </div>`;
         legend.style.position = 'absolute';
         legend.style.bottom = '12px';
-        legend.style.left = '12px';
+        legend.style.right = '12px';
         legend.style.zIndex = '999';
         mapContainer.appendChild(legend);
 

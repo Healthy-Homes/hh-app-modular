@@ -1,14 +1,14 @@
 import { getTranslation, getCurrentLang } from './i18n.js';
 import { exportFHIRBundle } from './fhir-export.js';
 
-// ✅ Extend fonts safely with fallback to existing definitions
+// ✅ Use exact font name embedded in vfs_fonts.js
 pdfMake.fonts = {
   ...(pdfMake.fonts || {}),
   NotoSansTC: {
-    normal: 'NotoSansTC-VariableFont_wght.ttf',
-    bold: 'NotoSansTC-VariableFont_wght.ttf',
-    italics: 'NotoSansTC-VariableFont_wght.ttf',
-    bolditalics: 'NotoSansTC-VariableFont_wght.ttf'
+    normal: 'NotoSansTC-Regular.ttf',
+    bold: 'NotoSansTC-Regular.ttf',
+    italics: 'NotoSansTC-Regular.ttf',
+    bolditalics: 'NotoSansTC-Regular.ttf'
   }
 };
 

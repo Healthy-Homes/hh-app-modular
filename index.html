@@ -2,28 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Healthy Homes Practitioner App</title>
 
-  <!-- Tailwind CDN for development (not for production use) -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Optional: Suppress favicon 404 -->
+  <link rel="icon" href="data:," />
 
-  <!-- MapLibre CSS -->
+  <!-- Tailwind for development (remove for production builds) -->
+  <script src="https://cdn.tailwindcss.com" defer></script>
+
+  <!-- MapLibre styles -->
   <link href="https://unpkg.com/maplibre-gl@3.3.1/dist/maplibre-gl.css" rel="stylesheet" />
 
-  <!-- Optional custom tweaks -->
+  <!-- Custom styles -->
   <link rel="stylesheet" href="css/styles.css" />
 
-  <!-- ✅ PDFMake with Unicode + CJK font support -->
-  <script src="https://cdn.jsdelivr.net/npm/pdfmake-unicode@1.0.3/build/pdfmake.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pdfmake-unicode@1.0.3/build/vfs_fonts.js"></script>
-  <script>
-    // ✅ Expose pdfMake globally so it's usable in ES modules
-    window.pdfMake = pdfMake;
-  </script>
+  <!-- ✅ PDFMake + Unicode font support (deferred load) -->
+  <script src="https://cdn.jsdelivr.net/npm/pdfmake-unicode@1.0.3/build/pdfmake.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfmake-unicode@1.0.3/build/vfs_fonts.js" defer></script>
 
-  <!-- Main JS entry point -->
-  <script type="module" src="js/main.js"></script>
+  <!-- ✅ App entry point: Executes AFTER all scripts above -->
+  <script type="module" src="js/main.js" defer></script>
 </head>
 
 <body class="bg-gray-100 text-gray-900 min-h-screen">
@@ -33,24 +32,24 @@
 
   <main class="p-4 space-y-6 max-w-4xl mx-auto">
 
-    <!-- Language Toggle Buttons -->
+    <!-- Language Toggle -->
     <section id="language-toggle" class="mb-4"></section>
 
-    <!-- Consent Form Section -->
+    <!-- Consent Form -->
     <section id="consent-block" class="space-y-2">
-      <label data-i18n="resident_name_label" for="resident-name">Resident Name</label><br/>
-      <input id="resident-name" type="text" placeholder="" class="border p-2 w-full" data-i18n-placeholder="name_placeholder">
+      <label data-i18n="resident_name_label" for="resident-name">Resident Name</label><br />
+      <input id="resident-name" type="text" class="border p-2 w-full" data-i18n-placeholder="resident_name_placeholder" />
 
       <label class="block mt-2">
-        <input type="checkbox" id="consent-checkbox" class="mr-2">
+        <input type="checkbox" id="consent-checkbox" class="mr-2" />
         <span data-i18n="consent_text">I consent to a home inspection...</span>
       </label>
     </section>
 
-    <!-- Housing Inspection Checklist -->
+    <!-- Inspection Checklist -->
     <section id="checklist"></section>
 
-    <!-- Social Determinants of Health Questionnaire -->
+    <!-- SDOH Form -->
     <section id="sdoh-form"></section>
 
     <!-- Map Section -->
@@ -58,7 +57,7 @@
       <div id="map" class="h-64 w-full rounded shadow"></div>
     </section>
 
-    <!-- Export Buttons -->
+    <!-- Export Button -->
     <section id="export-buttons">
       <button id="export-btn" class="bg-blue-600 text-white px-4 py-2 rounded" data-i18n="export_button">
         Export Report

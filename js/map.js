@@ -1,3 +1,4 @@
+// js/map.js
 import L from 'https://cdn.skypack.dev/leaflet';
 
 export async function initializeMap() {
@@ -7,33 +8,41 @@ export async function initializeMap() {
     return;
   }
 
-  // Initialize map with fallback center
-  const fallbackCoords = [25.0423, 121.5315]; // Near NTU
-  const map = L.map('map').setView(fallbackCoords, 15);
+  // Initialize map with default center near NTU
+  const fallbackCoords = [25.0423, 121.5315];
+  const map = L.map('map', {
+    center: fallbackCoords,
+    zoom: 15,
+    scrollWheelZoom: false, // Prevent zooming on scroll
+    doubleClickZoom: false, // Optional: disable double-click zoom
+    boxZoom: false
+  });
 
-  // Add OpenStreetMap tiles
+  // Add OpenStreetMap tile layer
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
 
-  // Try to center on user's actual location
+  // Try geolocation
   if ('geolocation' in navigator) {
     try {
-      const position = await new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
-      });
+      const position = await new Promise((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 })
+      );
       const { latitude, longitude } = position.coords;
       map.setView([latitude, longitude], 16);
     } catch (err) {
-      console.warn('Geolocation error or denied, using fallback location.');
+      console.warn('Geolocation failed or denied, using fallback.');
     }
   }
 
-  // Load mock GeoJSON environmental risk data
+  // Load mock GeoJSON data
   try {
     const res = await fetch('data/mock-risk-area.geojson');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const geojson = await res.json();
 
+    // Add risk layer
     const riskLayer = L.geoJSON(geojson, {
       style: feature => ({
         color: 'red',
@@ -49,15 +58,20 @@ export async function initializeMap() {
     // Add legend
     const legend = L.control({ position: 'bottomright' });
     legend.onAdd = function () {
-      const div = L.DomUtil.create('div', 'bg-white p-2 text-sm shadow rounded');
-      div.innerHTML = `<div class="flex items-center">
-        <div class="w-4 h-4 bg-red-500 opacity-50 mr-2 border"></div>
-        <span>High-Risk Area</span>
-      </div>`;
+      const div = L.DomUtil.create('div');
+      div.style.background = 'white';
+      div.style.padding = '6px';
+      div.style.fontSize = '14px';
+      div.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+      div.style.borderRadius = '6px';
+      div.innerHTML = `
+        <div style="display: flex; align-items: center;">
+          <div style="width: 16px; height: 16px; background-color: rgba(255, 0, 0, 0.5); border: 1px solid #000; margin-right: 6px;"></div>
+          <span>High-Risk Area</span>
+        </div>`;
       return div;
     };
     legend.addTo(map);
-
   } catch (err) {
     console.error('Failed to load mock risk data:', err);
   }

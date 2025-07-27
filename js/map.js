@@ -17,9 +17,7 @@ export function initializeMap() {
         sources: {
           rasterTiles: {
             type: 'raster',
-            tiles: [
-              'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
-            ],
+            tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
             tileSize: 256,
             attribution: '© OpenStreetMap contributors'
           }
@@ -38,15 +36,14 @@ export function initializeMap() {
       zoom: 15
     });
 
-    // Navigation controls
+    // Add navigation controls
     map.addControl(new maplibregl.NavigationControl());
 
-    // Try geolocation
+    // Geolocation (if allowed)
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
-        pos => {
-          const { latitude, longitude } = pos.coords;
-          map.setCenter([longitude, latitude]);
+        ({ coords }) => {
+          map.setCenter([coords.longitude, coords.latitude]);
           map.setZoom(16);
         },
         () => console.warn('Geolocation failed, using fallback'),
@@ -54,12 +51,13 @@ export function initializeMap() {
       );
     }
 
-    // Add polygon layer after map loads
+    // On map load
     map.on('load', async () => {
       try {
         const res = await fetch('data/mock-risk-area.geojson');
         const data = await res.json();
 
+        // Add GeoJSON source and polygon layers
         map.addSource('risk-area', {
           type: 'geojson',
           data
@@ -70,7 +68,7 @@ export function initializeMap() {
           type: 'fill',
           source: 'risk-area',
           paint: {
-            'fill-color': '#f87171',       // red-400
+            'fill-color': '#f87171',  // red-400
             'fill-opacity': 0.4
           }
         });
@@ -80,26 +78,30 @@ export function initializeMap() {
           type: 'line',
           source: 'risk-area',
           paint: {
-            'line-color': '#b91c1c',        // red-800
+            'line-color': '#b91c1c', // red-800
             'line-width': 2
           }
         });
 
-        // Prevent duplicate legends
-        if (!document.getElementById('risk-legend')) {
-          const legend = document.createElement('div');
-          legend.id = 'risk-legend';
-          legend.innerHTML = `
-            <div class="bg-white p-2 text-sm shadow rounded flex items-center space-x-2 border border-gray-300">
-              <span class="inline-block w-4 h-4 bg-red-500 opacity-50 border"></span>
-              <span>High Risk Area</span>
-            </div>`;
-          legend.style.position = 'absolute';
-          legend.style.bottom = '12px';
-          legend.style.right = '12px';
-          legend.style.zIndex = '999';
-          mapContainer.appendChild(legend);
-        }
+        // Remove existing legend if present
+        const oldLegend = mapContainer.querySelector('.custom-map-legend');
+        if (oldLegend) oldLegend.remove();
+
+        // Create legend
+        const legend = document.createElement('div');
+        legend.className = 'custom-map-legend';
+        legend.innerHTML = `
+          <div class="bg-white p-2 text-sm shadow rounded flex items-center space-x-2 border border-gray-300">
+            <span class="inline-block w-4 h-4 bg-red-500 opacity-50 border"></span>
+            <span>High Risk Area</span>
+          </div>`;
+        Object.assign(legend.style, {
+          position: 'absolute',
+          bottom: '12px',
+          right: '12px',
+          zIndex: '999'
+        });
+        mapContainer.appendChild(legend);
 
         console.log('Mock risk polygon loaded');
       } catch (err) {

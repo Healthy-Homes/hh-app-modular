@@ -1,10 +1,15 @@
-import { getTranslation, getCurrentLang } from './i18n.js';
+import { getTranslation } from './i18n.js';
 import { exportFHIRBundle } from './fhir-export.js';
 
-// ✅ Bind pdfMake from global scope (required in ES modules)
-const pdfMake = window.pdfMake;
-
 export async function exportPDF() {
+  const pdfMake = window.pdfMake; // ✅ Required for ES module context
+
+  if (!pdfMake?.createPdf) {
+    console.error('pdfMake is not properly loaded');
+    alert('PDF generation failed. Please try again.');
+    return;
+  }
+
   const bundle = await exportFHIRBundle();
 
   if (!bundle?.entry) {
@@ -66,7 +71,7 @@ export async function exportPDF() {
     },
     defaultStyle: {
       fontSize: 10,
-      font: 'Helvetica' // system fallback font (non-CJK); CJK fonts handled by vfs_fonts
+      font: 'Helvetica'
     }
   };
 

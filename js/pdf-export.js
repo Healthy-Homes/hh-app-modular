@@ -1,19 +1,30 @@
 import { getTranslation, getCurrentLang } from './i18n.js';
-import { exportFHIRBundle } from './fhir-export.js'; // ✅ Corrected import
+import { exportFHIRBundle } from './fhir-export.js';
+
+// ✅ Extend fonts safely with fallback to existing definitions
+pdfMake.fonts = {
+  ...(pdfMake.fonts || {}),
+  NotoSansTC: {
+    normal: 'NotoSansTC-VariableFont_wght.ttf',
+    bold: 'NotoSansTC-VariableFont_wght.ttf',
+    italics: 'NotoSansTC-VariableFont_wght.ttf',
+    bolditalics: 'NotoSansTC-VariableFont_wght.ttf'
+  }
+};
 
 export async function exportPDF() {
-  const bundle = await exportFHIRBundle(); // ✅ Matches correct function
+  const bundle = await exportFHIRBundle();
 
-  if (!bundle || !bundle.entry) {
+  if (!bundle?.entry) {
     console.error('FHIR Bundle is missing or malformed:', bundle);
     alert('Cannot generate PDF: No export data available.');
     return;
   }
 
   const now = new Date().toLocaleString();
-  const patientEntry = bundle.entry.find(e => e.resource.resourceType === 'Patient');
-  const consentEntry = bundle.entry.find(e => e.resource.resourceType === 'Consent');
-  const observations = bundle.entry.filter(e => e.resource.resourceType === 'Observation');
+  const patientEntry = bundle.entry.find(e => e.resource?.resourceType === 'Patient');
+  const consentEntry = bundle.entry.find(e => e.resource?.resourceType === 'Consent');
+  const observations = bundle.entry.filter(e => e.resource?.resourceType === 'Observation');
 
   const residentName = patientEntry?.resource?.name?.[0]?.text || getTranslation('unnamed');
   const consentStatus = consentEntry?.resource?.status === 'active'
@@ -35,7 +46,7 @@ export async function exportPDF() {
       body: [
         [getTranslation('item'), getTranslation('response')],
         ...items.map(obs => [
-          obs.resource.code.text,
+          obs.resource.code?.text || '',
           obs.resource.valueBoolean !== undefined
             ? (obs.resource.valueBoolean ? getTranslation('yes') : getTranslation('no'))
             : obs.resource.valueString || ''
@@ -66,8 +77,6 @@ export async function exportPDF() {
       fontSize: 10
     }
   };
-
-  // Optional future logic: embed base64 bundle or QR code here
 
   pdfMake.createPdf(docDefinition).open();
 }

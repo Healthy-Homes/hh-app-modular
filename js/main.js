@@ -9,13 +9,14 @@ import { initializeMap } from './map.js';
 
 console.log('✅ Main.js loaded');
 
-// ✅ Language setup (loads lang/en.json or lang/zh.json)
-setupLanguage();
-
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('✅ DOM fully loaded');
 
+  setupLanguage(); // ✅ moved inside DOM ready
   setupConsent();
+  
+  // ... (rest of your logic follows)
+
 
   try {
     await Promise.all([

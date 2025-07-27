@@ -21,7 +21,7 @@ main {
   z-index: 1;
 }
 
-/* Map container */
+/* Map container for MapLibre */
 #map {
   height: 100%;
   width: 100%;
@@ -31,18 +31,18 @@ main {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Ensure Leaflet controls are never hidden */
-.leaflet-control-container {
+/* MapLibre control visibility */
+.maplibregl-control-container {
   z-index: 500 !important;
 }
 
-/* Optional: prevent text overlap during popup rendering */
-.leaflet-popup-content-wrapper {
+/* Optional: Popup content styling */
+.maplibregl-popup-content {
   font-size: 0.875rem;
   line-height: 1.25rem;
 }
 
-/* Optional: maintain map crispness on scaling */
-.leaflet-container {
+/* Optional: Crisp rendering on zoom/pan */
+.maplibregl-canvas {
   image-rendering: auto;
 }

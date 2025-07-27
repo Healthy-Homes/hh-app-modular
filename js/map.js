@@ -1,85 +1,73 @@
-import L from 'https://cdn.skypack.dev/leaflet';
+import maplibregl from 'https://cdn.skypack.dev/maplibre-gl';
 
 export function initializeMap() {
   const mapContainer = document.getElementById('map');
-  const sectionContainer = document.getElementById('map-section');
-
-  if (!mapContainer || !sectionContainer) {
-    console.error('Map or container not found!');
+  if (!mapContainer) {
+    console.error('Map container not found!');
     return;
   }
 
-  const fallbackCoords = [25.0423, 121.5315];
+  const fallbackCoords = [121.5315, 25.0423]; // [lng, lat] near NTU
 
-  const observer = new ResizeObserver(entries => {
-    for (let entry of entries) {
-      const { width, height } = entry.contentRect;
-      if (width > 0 && height > 0) {
-        observer.disconnect();
+  // Defer map setup until after layout is ready
+  requestAnimationFrame(() => {
+    const map = new maplibregl.Map({
+      container: mapContainer,
+      style: 'https://demotiles.maplibre.org/style.json', // Basic MapLibre demo tiles
+      center: fallbackCoords,
+      zoom: 15
+    });
 
-        // Ensure browser layout is committed before Leaflet mount
-        requestAnimationFrame(() => {
-          // Short delay ensures rendering pipeline has flushed
-          setTimeout(() => {
-            const map = L.map(mapContainer, {
-              center: fallbackCoords,
-              zoom: 15,
-              zoomControl: true,
-              attributionControl: true,
-            });
+    // Add navigation (zoom/rotation) controls
+    map.addControl(new maplibregl.NavigationControl());
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-              attribution: '&copy; OpenStreetMap contributors',
-              maxZoom: 19
-            }).addTo(map);
-
-            map.whenReady(() => {
-              map.invalidateSize();
-            });
-
-            if ('geolocation' in navigator) {
-              navigator.geolocation.getCurrentPosition(
-                pos => {
-                  map.setView([pos.coords.latitude, pos.coords.longitude], 16);
-                },
-                () => console.warn('Geolocation failed, using fallback'),
-                { timeout: 8000 }
-              );
-            }
-
-            // Load mock risk data
-            fetch('data/mock-risk-area.geojson')
-              .then(res => res.json())
-              .then(geojson => {
-                L.geoJSON(geojson, {
-                  style: {
-                    color: 'red',
-                    weight: 2,
-                    fillOpacity: 0.4
-                  },
-                  onEachFeature: (feature, layer) => {
-                    const desc = feature.properties?.description || 'Environmental risk area';
-                    layer.bindPopup(desc);
-                  }
-                }).addTo(map);
-
-                const legend = L.control({ position: 'bottomright' });
-                legend.onAdd = function () {
-                  const div = L.DomUtil.create('div', 'bg-white p-2 text-sm shadow rounded');
-                  div.innerHTML = `<div class="flex items-center">
-                    <div class="w-4 h-4 bg-red-500 opacity-50 mr-2 border"></div>
-                    <span>High-Risk Area</span>
-                  </div>`;
-                  return div;
-                };
-                legend.addTo(map);
-              })
-              .catch(err => console.error('Failed to load GeoJSON:', err));
-          }, 0); // Minimal delay to flush layout
-        });
-      }
+    // Optional geolocation
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          const { latitude, longitude } = pos.coords;
+          map.setCenter([longitude, latitude]);
+          map.setZoom(16);
+        },
+        () => {
+          console.warn('Geolocation failed, using fallback');
+        },
+        { timeout: 8000 }
+      );
     }
-  });
 
-  observer.observe(sectionContainer);
+    // Handle map load event
+    map.on('load', () => {
+      console.log('MapLibre map fully loaded.');
+
+      // Example: Add a static red polygon overlay (placeholder)
+      // Uncomment and adapt when ready to load real data
+      /*
+      map.addSource('risk-area', {
+        type: 'geojson',
+        data: 'data/mock-risk-area.geojson'
+      });
+
+      map.addLayer({
+        id: 'risk-fill',
+        type: 'fill',
+        source: 'risk-area',
+        paint: {
+          'fill-color': '#f03b20',
+          'fill-opacity': 0.4
+        }
+      });
+
+      map.addLayer({
+        id: 'risk-outline',
+        type: 'line',
+        source: 'risk-area',
+        paint: {
+          'line-color': '#f03b20',
+          'line-width': 2
+        }
+      });
+      */
+    });
+  });
 }

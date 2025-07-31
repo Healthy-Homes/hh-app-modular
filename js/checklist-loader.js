@@ -1,4 +1,5 @@
 import { getTranslation } from './i18n.js';
+import { RISK_WEIGHTS } from './risk-weights.js';
 
 export async function loadChecklist() {
   const res = await fetch('data/checklist.csv');
@@ -8,7 +9,7 @@ export async function loadChecklist() {
   const container = document.getElementById('checklist');
   container.innerHTML = ''; // clear on reload
 
-  // Parse header to support dynamic column order
+  // Parse header
   const headers = lines[0].split(',');
   const idxMap = {};
   headers.forEach((h, i) => (idxMap[h] = i));
@@ -21,6 +22,10 @@ export async function loadChecklist() {
     const descKey = cols[idxMap['description_key']];
     const code = cols[idxMap['code']];
     const codeSystem = cols[idxMap['code_system']];
+
+    if (!(itemKey in RISK_WEIGHTS.checklist)) {
+      console.warn(`⚠️ Checklist itemKey "${itemKey}" not found in RISK_WEIGHTS.checklist`);
+    }
 
     const div = document.createElement('div');
     div.className = 'p-2 border rounded bg-white shadow flex items-start space-x-3';

@@ -1,91 +1,122 @@
 // js/risk-model.js
-
 import { RISK_WEIGHTS } from './risk-weights.js';
 
-// ✅ Core scoring function
+// ✅ Core scoring function with diagnostics
 export function calculateRisk(checklistResponses, sdohResponses) {
+  console.group('🧮 Risk Calculation');
+  console.log('Checklist:', checklistResponses);
+  console.log('SDOH:', sdohResponses);
+
   let total = 0;
+  let checklistPoints = 0;
+  let sdohPoints = 0;
 
   // ✅ Score checklist items
   for (let [key, value] of Object.entries(checklistResponses)) {
-    if (value === true && RISK_WEIGHTS.checklist[key]) {
-      total += RISK_WEIGHTS.checklist[key];
+    if (value === true) {
+      const points = RISK_WEIGHTS.checklist[key];
+      if (points !== undefined) {
+        checklistPoints += points;
+        total += points;
+        console.log(`✅ ${key} → +${points}`);
+      } else {
+        console.warn(`⚠️ ${key} has no weight defined`);
+      }
     }
   }
 
   // ✅ Score SDOH items
   for (let [key, response] of Object.entries(sdohResponses)) {
-    const weight = RISK_WEIGHTS.sdoh[key];
-    if (weight && weight[response] !== undefined) {
-      total += weight[response];
+    const weightMap = RISK_WEIGHTS.sdoh[key];
+    if (weightMap && weightMap[response] !== undefined) {
+      const points = weightMap[response];
+      sdohPoints += points;
+      total += points;
+      console.log(`✅ ${key} (${response}) → +${points}`);
+    } else {
+      console.warn(`⚠️ ${key} has no match for response "${response}"`);
     }
   }
 
-  return Math.min(total, 100); // Cap score at 100
+  const finalScore = Math.min(total, 100);
+  console.log(`🎯 Total Score: ${finalScore} (checklist: ${checklistPoints}, sdoh: ${sdohPoints})`);
+  console.groupEnd();
+
+  return finalScore;
 }
 
-// ✅ UI integration: wire up toggle and scoring display
+// ✅ Setup risk scoring UI toggle
 export function setupRiskScoring() {
-  const riskToggle = document.getElementById('risk-toggle');
-  const riskPanel = document.getElementById('risk-score-output');
+  console.group('🧩 setupRiskScoring');
+  const toggle = document.getElementById('risk-toggle');
+  const output = document.getElementById('risk-score-output');
 
-  if (!riskToggle || !riskPanel) {
-    console.warn('⚠️ Risk toggle or output panel not found in DOM');
+  if (!toggle || !output) {
+    console.warn('⚠️ Risk toggle or output element missing');
     return;
   }
 
-  // Wait until form fields are likely populated
-  setTimeout(() => {
-    riskToggle.addEventListener('change', () => {
-      const showRisk = riskToggle.checked;
+  // Replace existing listener
+  const cleanToggle = toggle.cloneNode(true);
+  toggle.parentNode.replaceChild(cleanToggle, toggle);
 
-      if (!showRisk) {
-        riskPanel.classList.add('hidden');
-        return;
-      }
+  cleanToggle.addEventListener('change', () => {
+    const isChecked = cleanToggle.checked;
 
-      const checklistResponses = getChecklistResponses();
-      const sdohResponses = getSDOHResponses();
+    if (!isChecked) {
+      output.classList.add('hidden');
+      return;
+    }
 
-      const homeScore = calculateRisk(checklistResponses, {});
-      const sdohScore = calculateRisk({}, sdohResponses);
-      const totalScore = calculateRisk(checklistResponses, sdohResponses);
+    const checklist = getChecklistResponses();
+    const sdoh = getSDOHResponses();
 
-      riskPanel.classList.remove('hidden');
-      applyRiskBadge(homeScore, document.getElementById('home-risk'));
-      applyRiskBadge(sdohScore, document.getElementById('sdoh-risk'));
-      applyRiskBadge(totalScore, document.getElementById('total-risk'));
-    });
-  }, 500);
+    const homeScore = calculateRisk(checklist, {});
+    const sdohScore = calculateRisk({}, sdoh);
+    const totalScore = calculateRisk(checklist, sdoh);
+
+    output.classList.remove('hidden');
+    applyRiskBadge(homeScore, document.getElementById('home-risk'));
+    applyRiskBadge(sdohScore, document.getElementById('sdoh-risk'));
+    applyRiskBadge(totalScore, document.getElementById('total-risk'));
+  });
+
+  console.groupEnd();
 }
 
-// ✅ Display color-coded risk badge
+// ✅ Helper: apply risk color
 function applyRiskBadge(score, el) {
   el.textContent = score;
   el.classList.remove('bg-green-600', 'bg-yellow-500', 'bg-red-600');
-  if (score <= 33) {
-    el.classList.add('bg-green-600');
-  } else if (score <= 66) {
-    el.classList.add('bg-yellow-500');
-  } else {
-    el.classList.add('bg-red-600');
-  }
+  if (score <= 33) el.classList.add('bg-green-600');
+  else if (score <= 66) el.classList.add('bg-yellow-500');
+  else el.classList.add('bg-red-600');
 }
 
-// ✅ Extract checklist values (boolean)
+// ✅ Helper: parse checklist checkboxes
 function getChecklistResponses() {
-  const responses = {};
-  document.querySelectorAll('#checklist input[type="checkbox"]').forEach(input => {
-    responses[input.id] = input.checked;
+  const result = {};
+  document.querySelectorAll('#checklist input[type="checkbox"]').forEach(el => {
+    result[el.id] = el.checked;
   });
-  return responses;
+  return result;
 }
 
-// ✅ Extract SDOH values (select dropdowns)
+// ✅ Helper: parse sdoh selects
 function getSDOHResponses() {
-  const responses = {};
-  document.querySelectorAll('#sdoh-form select').forEach(select => {
-    responses[select.id] = select.value;
+  const result = {};
+  document.querySelectorAll('#sdoh-form select').forEach(el => {
+    result[el.id] = el.value;
   });
-  return responses;
+  return result;
 }
+
+// ✅ Dev tool
+window.debugRiskScoring = () => {
+  console.group('🔍 debugRiskScoring()');
+  const checklist = getChecklistResponses();
+  const sdoh = getSDOHResponses();
+  const total = calculateRisk(checklist, sdoh);
+  console.log({ checklist, sdoh, total });
+  console.groupEnd();
+};

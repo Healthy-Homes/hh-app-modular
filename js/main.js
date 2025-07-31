@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     console.log('✅ Checklist, SDOH, and Map loaded');
 
-    setTimeout(setupRiskScoring, 500); // ✅ Delay to ensure DOM elements are present
+    setupRiskScoring();  // ✅ Risk scoring UI logic, with built-in readiness checks
 
   } catch (err) {
     console.error('❌ App load failed:', err);

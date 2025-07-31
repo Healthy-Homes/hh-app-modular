@@ -11,9 +11,8 @@
   <link rel="stylesheet" href="css/styles.css" />
 
   <!-- ✅ Reliable pdfMake CDN -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
   <!-- ✅ App entry point -->
   <script type="module" src="js/main.js" defer></script>
@@ -29,29 +28,55 @@
     <!-- ✅ Language Toggle Section -->
     <section id="language-toggle" class="mb-4"></section>
 
-    <!-- Consent Form -->
+    <!-- ✅ Consent Form -->
     <section id="consent-block" class="space-y-2">
-      <label for="resident-name">Resident Name</label><br/>
-      <input id="resident-name" type="text" placeholder="Enter resident name" class="border p-2 w-full">
+      <label for="resident-name" data-i18n="residentNameLabel">Resident Name</label><br/>
+      <input id="resident-name" type="text" placeholder="Enter resident name" class="border p-2 w-full" />
 
       <label class="block mt-2">
-        <input type="checkbox" id="consent-checkbox" class="mr-2">
-        I consent to a home inspection and agree to share information for documentation purposes.
+        <input type="checkbox" id="consent-checkbox" class="mr-2" />
+        <span data-i18n="consentText">I consent to a home inspection and agree to share information for documentation purposes.</span>
       </label>
     </section>
 
-    <!-- Checklist Section -->
+    <!-- ✅ Home Checklist Section -->
     <section id="checklist"></section>
 
-    <!-- SDOH Form Section -->
+    <!-- ✅ SDOH Survey Section -->
     <section id="sdoh-form"></section>
 
-    <!-- Map Section -->
+    <!-- ✅ Map Section -->
     <section id="map-section" class="mt-4 relative">
       <div id="map" class="h-64 w-full rounded shadow"></div>
     </section>
 
-    <!-- Export Button -->
+    <!-- ✅ Risk Scoring Toggle Section -->
+    <section id="risk-toggle-section" class="p-4 mt-4 border rounded bg-gray-50">
+      <label class="flex items-center space-x-2">
+        <input type="checkbox" id="risk-toggle" class="accent-blue-600" />
+        <span data-i18n="riskToggleLabel" class="text-base font-medium">
+          Include risk scoring in this report (display and export)
+        </span>
+      </label>
+    </section>
+
+    <!-- ✅ Risk Scoring Output Section -->
+    <section id="risk-score-output" class="hidden mt-4 p-4 border rounded bg-white shadow space-y-2">
+      <div>
+        <span data-i18n="riskHomeScore"><strong>🏠 Home Risk Score</strong></span>:
+        <span id="home-risk" class="ml-2 px-2 py-1 rounded text-white"></span>
+      </div>
+      <div>
+        <span data-i18n="riskSDOHScore"><strong>🌍 Social Risk Score</strong></span>:
+        <span id="sdoh-risk" class="ml-2 px-2 py-1 rounded text-white"></span>
+      </div>
+      <div>
+        <span data-i18n="riskTotalScore"><strong>⚠️ Total Risk Score</strong></span>:
+        <span id="total-risk" class="ml-2 px-2 py-1 rounded text-white"></span>
+      </div>
+    </section>
+
+    <!-- ✅ Export Button Section -->
     <section id="export-buttons">
       <button id="export-btn" class="bg-blue-600 text-white px-4 py-2 rounded">
         Export Report

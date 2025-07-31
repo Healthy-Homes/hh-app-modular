@@ -1,4 +1,4 @@
-// main.js
+// ✅ main.js
 import { loadChecklist } from './checklist-loader.js';
 import { loadSDOH } from './sdoh-loader.js';
 import { setupConsent } from './consent.js';
@@ -6,6 +6,7 @@ import { setupLanguage } from './i18n.js';
 import { exportFHIRBundle } from './fhir-export.js';
 import { exportPDF } from './pdf-export.js';
 import { initializeMap } from './map.js';
+import { setupRiskScoring } from './risk-model.js';
 
 console.log('✅ Main.js loaded');
 
@@ -23,6 +24,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     ]);
 
     console.log('✅ Checklist, SDOH, and Map loaded');
+
+    setupRiskScoring();  // ✅ Risk scoring UI logic, with built-in readiness checks
+
   } catch (err) {
     console.error('❌ App load failed:', err);
     alert('App failed to load. Please refresh.');
@@ -40,9 +44,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       const bundle = await exportFHIRBundle();
       console.log('✅ FHIR Bundle ready:', bundle);
 
-      await waitForPdfMake(); // ⏳ Confirm library is available
-
-      exportPDF(bundle);      // 🧾 Generate English-only PDF
+      await waitForPdfMake();
+      exportPDF(bundle);
     } catch (err) {
       console.error('❌ Export failed:', err);
       alert('Unable to generate report.');
@@ -50,11 +53,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 });
 
-// ✅ Wait for pdfMake to become available in global scope
 function waitForPdfMake() {
   return new Promise((resolve, reject) => {
     let attempts = 0;
-    const maxAttempts = 30; // ~6 seconds
+    const maxAttempts = 30;
     const interval = setInterval(() => {
       if (window.pdfMake && typeof window.pdfMake.createPdf === 'function') {
         clearInterval(interval);

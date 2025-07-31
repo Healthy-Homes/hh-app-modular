@@ -51,6 +51,22 @@
       <div id="map" class="h-64 w-full rounded shadow"></div>
     </section>
 
+<!-- Risk scoring toggle -->
+<div class="p-4 mt-4 border rounded bg-gray-50">
+  <label class="flex items-center space-x-2">
+    <input type="checkbox" id="risk-toggle" class="accent-blue-600" />
+    <span id="risk-toggle-label" class="text-base font-medium">Include risk scoring in this report (display and export)</span>
+  </label>
+</div>
+
+<!-- Risk scoring output panel -->
+<div id="risk-score-output" class="hidden mt-4 p-4 border rounded bg-white shadow space-y-2">
+  <div><strong>🏠 Home Risk Score:</strong> <span id="home-risk" class="px-2 py-1 rounded text-white"></span></div>
+  <div><strong>🌍 Social Risk Score:</strong> <span id="sdoh-risk" class="px-2 py-1 rounded text-white"></span></div>
+  <div><strong>⚠️ Total Risk Score:</strong> <span id="total-risk" class="px-2 py-1 rounded text-white"></span></div>
+</div>
+
+
     <!-- Export Button -->
     <section id="export-buttons">
       <button id="export-btn" class="bg-blue-600 text-white px-4 py-2 rounded">

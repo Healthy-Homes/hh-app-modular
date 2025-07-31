@@ -121,5 +121,9 @@
   "languageBarrier_label": "您是否需要翻譯人員與醫療服務提供者溝通？",
   "languageBarrier_opt1": "需要",
   "languageBarrier_opt2": "不需要",
-  "languageBarrier_opt3": "有時需要"
+  "languageBarrier_opt3": "有時需要",
+    "riskToggleLabel": "是否納入風險評估（顯示並匯出報告）",
+  "riskHomeScore": "🏠 居家風險分數",
+  "riskSDOHScore": "🌍 社會風險分數",
+  "riskTotalScore": "⚠️ 總風險分數"
 }

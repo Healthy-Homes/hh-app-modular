@@ -14,7 +14,7 @@ export async function loadSDOH() {
   const idxMap = {};
   headers.forEach((h, i) => (idxMap[h] = i));
 
-  lines.slice(1).forEach(line => {
+  lines.slice(1).forEach((line, rowIdx) => {
     const cols = line.split(',');
 
     const id = cols[idxMap['id']];
@@ -26,6 +26,11 @@ export async function loadSDOH() {
       .filter(h => h.startsWith('opt'))
       .map(h => cols[idxMap[h]])
       .filter(k => k && k.trim().length > 0);
+
+    if (!id || !labelKey) {
+      console.warn(`⚠️ Skipping row ${rowIdx + 2}: missing id or label_key`);
+      return;
+    }
 
     const div = document.createElement('div');
     div.className = 'p-2 border-b';
@@ -44,9 +49,8 @@ export async function loadSDOH() {
     select.setAttribute('data-code-system', codeSystem);
 
     optionKeys.forEach(optKey => {
-      const shortKey = optKey.split('_').pop(); // ✅ Fix: just "opt1", "opt2", etc.
       const option = document.createElement('option');
-      option.value = shortKey;
+      option.value = optKey; // ✅ Corrected to full response key
       option.textContent = getTranslation(optKey);
       select.appendChild(option);
     });
@@ -57,5 +61,5 @@ export async function loadSDOH() {
     container.appendChild(div);
   });
 
-  console.log('✅ SDOH form loaded with corrected value keys');
+  console.log('✅ SDOH form loaded with corrected option keys');
 }

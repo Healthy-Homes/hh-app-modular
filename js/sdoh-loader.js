@@ -1,3 +1,4 @@
+// js/sdoh-loader.js
 import { getTranslation } from './i18n.js';
 
 export async function loadSDOH() {
@@ -6,9 +7,9 @@ export async function loadSDOH() {
 
   const lines = text.trim().split('\n');
   const container = document.getElementById('sdoh-form');
-  container.innerHTML = ''; // Clear old content on reload
+  container.innerHTML = ''; // Clear on reload
 
-  // Header parser
+  // ✅ Map header columns to indexes
   const headers = lines[0].split(',');
   const idxMap = {};
   headers.forEach((h, i) => (idxMap[h] = i));
@@ -43,8 +44,9 @@ export async function loadSDOH() {
     select.setAttribute('data-code-system', codeSystem);
 
     optionKeys.forEach(optKey => {
+      const shortKey = optKey.split('_').pop(); // ✅ Fix: just "opt1", "opt2", etc.
       const option = document.createElement('option');
-      option.value = optKey;
+      option.value = shortKey;
       option.textContent = getTranslation(optKey);
       select.appendChild(option);
     });
@@ -54,4 +56,6 @@ export async function loadSDOH() {
     div.appendChild(select);
     container.appendChild(div);
   });
+
+  console.log('✅ SDOH form loaded with corrected value keys');
 }

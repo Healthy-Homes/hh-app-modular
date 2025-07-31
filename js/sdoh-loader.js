@@ -1,4 +1,5 @@
 import { getTranslation } from './i18n.js';
+import { RISK_WEIGHTS } from './risk-weights.js';
 
 export async function loadSDOH() {
   const res = await fetch('data/sdoh.csv');
@@ -6,9 +7,8 @@ export async function loadSDOH() {
 
   const lines = text.trim().split('\n');
   const container = document.getElementById('sdoh-form');
-  container.innerHTML = ''; // Clear old content on reload
+  container.innerHTML = ''; // Clear old content
 
-  // Header parser
   const headers = lines[0].split(',');
   const idxMap = {};
   headers.forEach((h, i) => (idxMap[h] = i));
@@ -20,6 +20,10 @@ export async function loadSDOH() {
     const labelKey = cols[idxMap['label_key']];
     const code = cols[idxMap['code']];
     const codeSystem = cols[idxMap['code_system']];
+
+    if (!(id in RISK_WEIGHTS.sdoh)) {
+      console.warn(`⚠️ SDOH id "${id}" not found in RISK_WEIGHTS.sdoh`);
+    }
 
     const optionKeys = headers
       .filter(h => h.startsWith('opt'))
@@ -44,7 +48,7 @@ export async function loadSDOH() {
 
     optionKeys.forEach(optKey => {
       const option = document.createElement('option');
-      option.value = optKey;
+      option.value = optKey; // Keep value as "opt1", "opt2", etc.
       option.textContent = getTranslation(optKey);
       select.appendChild(option);
     });

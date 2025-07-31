@@ -50,18 +50,18 @@
       <div id="map" class="h-64 w-full rounded shadow"></div>
     </section>
 
-    <!-- ✅ Risk Scoring Toggle -->
-    <div class="p-4 mt-4 border rounded bg-gray-50">
+    <!-- ✅ Risk Scoring Toggle Section -->
+    <section id="risk-toggle-section" class="p-4 mt-4 border rounded bg-gray-50">
       <label class="flex items-center space-x-2">
         <input type="checkbox" id="risk-toggle" class="accent-blue-600" />
         <span data-i18n="riskToggleLabel" class="text-base font-medium">
           Include risk scoring in this report (display and export)
         </span>
       </label>
-    </div>
+    </section>
 
-    <!-- ✅ Risk Scoring Output -->
-    <div id="risk-score-output" class="hidden mt-4 p-4 border rounded bg-white shadow space-y-2">
+    <!-- ✅ Risk Scoring Output Section -->
+    <section id="risk-score-output" class="hidden mt-4 p-4 border rounded bg-white shadow space-y-2">
       <div>
         <span data-i18n="riskHomeScore"><strong>🏠 Home Risk Score</strong></span>:
         <span id="home-risk" class="ml-2 px-2 py-1 rounded text-white"></span>
@@ -74,9 +74,9 @@
         <span data-i18n="riskTotalScore"><strong>⚠️ Total Risk Score</strong></span>:
         <span id="total-risk" class="ml-2 px-2 py-1 rounded text-white"></span>
       </div>
-    </div>
+    </section>
 
-    <!-- ✅ Export Button -->
+    <!-- ✅ Export Button Section -->
     <section id="export-buttons">
       <button id="export-btn" class="bg-blue-600 text-white px-4 py-2 rounded">
         Export Report

@@ -34,26 +34,29 @@ export function setupRiskScoring() {
     return;
   }
 
-  riskToggle.addEventListener('change', () => {
-    const showRisk = riskToggle.checked;
+  // Wait until form fields are likely populated
+  setTimeout(() => {
+    riskToggle.addEventListener('change', () => {
+      const showRisk = riskToggle.checked;
 
-    if (!showRisk) {
-      riskPanel.classList.add('hidden');
-      return;
-    }
+      if (!showRisk) {
+        riskPanel.classList.add('hidden');
+        return;
+      }
 
-    const checklistResponses = getChecklistResponses();
-    const sdohResponses = getSDOHResponses();
+      const checklistResponses = getChecklistResponses();
+      const sdohResponses = getSDOHResponses();
 
-    const homeScore = calculateRisk(checklistResponses, {});
-    const sdohScore = calculateRisk({}, sdohResponses);
-    const totalScore = calculateRisk(checklistResponses, sdohResponses);
+      const homeScore = calculateRisk(checklistResponses, {});
+      const sdohScore = calculateRisk({}, sdohResponses);
+      const totalScore = calculateRisk(checklistResponses, sdohResponses);
 
-    riskPanel.classList.remove('hidden');
-    applyRiskBadge(homeScore, document.getElementById('home-risk'));
-    applyRiskBadge(sdohScore, document.getElementById('sdoh-risk'));
-    applyRiskBadge(totalScore, document.getElementById('total-risk'));
-  });
+      riskPanel.classList.remove('hidden');
+      applyRiskBadge(homeScore, document.getElementById('home-risk'));
+      applyRiskBadge(sdohScore, document.getElementById('sdoh-risk'));
+      applyRiskBadge(totalScore, document.getElementById('total-risk'));
+    });
+  }, 500);
 }
 
 // ✅ Display color-coded risk badge

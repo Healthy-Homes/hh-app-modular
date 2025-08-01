@@ -91,3 +91,12 @@ function getSDOHResponses() {
   });
   return result;
 }
+
+// ✅ Missing export for use in main.js
+export function calculateRiskScores(checklist, sdoh) {
+  return {
+    homeScore: calculateRisk(checklist, {}),
+    sdohScore: calculateRisk({}, sdoh),
+    totalScore: calculateRisk(checklist, sdoh)
+  };
+}

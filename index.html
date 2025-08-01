@@ -6,11 +6,9 @@
   <title>Healthy Homes Practitioner App</title>
 
   <link rel="icon" href="data:," />
-  <script src="https://cdn.tailwindcss.com" defer></script>
+  <script src="https://cdn.tailwindcss.com"></script>
 
-  <link href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css" rel="stylesheet" />
-  <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
-
+  <!-- PDF generation library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
@@ -19,58 +17,105 @@
 
 <body class="bg-gray-100 text-gray-900 min-h-screen">
   <header class="p-4 bg-green-700 text-white text-xl font-bold">
-    Healthy Homes Practitioner App
+    <span data-i18n="healthyHomesReport">Healthy Homes Practitioner App</span>
   </header>
 
   <main class="p-4 space-y-6 max-w-4xl mx-auto">
-    <section id="language-toggle" class="mb-4"></section>
+    <!-- Language Toggle -->
+    <section id="language-toggle" class="mb-4 flex justify-end"></section>
 
-    <section id="consent-block" class="space-y-2">
-      <label for="resident-name" data-i18n="residentNameLabel">Resident Name</label><br/>
-      <input id="resident-name" type="text" placeholder="Enter resident name" class="border p-2 w-full" />
-      <label class="block mt-2">
-        <input type="checkbox" id="consent-checkbox" class="mr-2" />
-        <span data-i18n="consentText">I consent to a home inspection and agree to share information for documentation purposes.</span>
-      </label>
+    <!-- Consent Section -->
+    <section id="consent-block" class="bg-white p-4 rounded shadow space-y-3">
+      <h2 class="text-lg font-semibold text-gray-800" data-i18n="resident">Resident Information</h2>
+      
+      <div>
+        <label for="resident-name" id="resident-name-label" class="block text-sm font-medium text-gray-700 mb-1">
+          Resident Name
+        </label>
+        <input 
+          id="resident-name" 
+          type="text" 
+          placeholder="Enter resident name" 
+          class="border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" 
+        />
+      </div>
+      
+      <div>
+        <label class="flex items-start space-x-3">
+          <input type="checkbox" id="consent-checkbox" class="mt-1 text-blue-600" />
+          <span id="consent-label" class="text-sm text-gray-700">
+            I consent to a home inspection and agree to share information for documentation purposes.
+          </span>
+        </label>
+      </div>
     </section>
 
-    <section id="checklist"></section>
-    <section id="sdoh-form"></section>
-
-    <section id="map-section" class="mt-4 relative">
-      <div id="map" class="h-64 w-full rounded shadow"></div>
+    <!-- Checklist Section -->
+    <section class="bg-white p-4 rounded shadow">
+      <h2 class="text-lg font-semibold text-gray-800 mb-4" data-i18n="checklist">Home Inspection Checklist</h2>
+      <div id="checklist" class="space-y-2"></div>
     </section>
 
-    <section id="risk-toggle-section" class="p-4 mt-4 border rounded bg-gray-50">
-      <label class="flex items-center space-x-2">
-        <input type="checkbox" id="risk-toggle" class="accent-blue-600" />
-        <span data-i18n="riskToggleLabel" class="text-base font-medium">
+    <!-- SDOH Section -->
+    <section class="bg-white p-4 rounded shadow">
+      <h2 class="text-lg font-semibold text-gray-800 mb-4" data-i18n="sdoh">Social Determinants of Health</h2>
+      <div id="sdoh" class="space-y-4"></div>
+    </section>
+
+    <!-- Map Section -->
+    <section id="map-section" class="bg-white p-4 rounded shadow">
+      <h2 class="text-lg font-semibold text-gray-800 mb-4">Neighborhood Risk Map</h2>
+      <div id="map" class="h-80 w-full rounded border"></div>
+    </section>
+
+    <!-- Risk Scoring Toggle -->
+    <section id="risk-toggle-section" class="bg-white p-4 rounded shadow">
+      <label class="flex items-center space-x-3">
+        <input type="checkbox" id="risk-toggle" class="text-blue-600" />
+        <span class="text-base font-medium text-gray-800">
           Include risk scoring in this report (display and export)
         </span>
       </label>
     </section>
 
-    <section id="risk-score-output" class="hidden mt-4 p-4 border rounded bg-white shadow space-y-2">
-      <div>
-        <span data-i18n="riskHomeScore"><strong>🏠 Home Risk Score</strong></span>:
-        <span id="home-risk" class="ml-2 px-2 py-1 rounded text-white"></span>
-        <span id="risk-home-label" class="ml-2 font-semibold"></span>
-      </div>
-      <div>
-        <span data-i18n="riskSDOHScore"><strong>🌍 Social Risk Score</strong></span>:
-        <span id="sdoh-risk" class="ml-2 px-2 py-1 rounded text-white"></span>
-        <span id="risk-sdoh-label" class="ml-2 font-semibold"></span>
-      </div>
-      <div>
-        <span data-i18n="riskTotalScore"><strong>⚠️ Total Risk Score</strong></span>:
-        <span id="total-risk" class="ml-2 px-2 py-1 rounded text-white"></span>
-        <span id="risk-combined-label" class="ml-2 font-semibold"></span>
+    <!-- Risk Score Display -->
+    <section id="risk-score-output" class="hidden bg-white p-4 rounded shadow space-y-3">
+      <h3 class="text-lg font-semibold text-gray-800">Risk Assessment Results</h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="text-center p-3 border rounded">
+          <div class="text-2xl mb-2">🏠</div>
+          <div class="text-sm text-gray-600 mb-1">Home Risk Score</div>
+          <div>
+            <span id="home-risk" class="px-3 py-1 rounded text-white font-bold text-lg">0</span>
+          </div>
+          <div id="risk-home-label" class="text-sm font-medium mt-1"></div>
+        </div>
+        
+        <div class="text-center p-3 border rounded">
+          <div class="text-2xl mb-2">🌍</div>
+          <div class="text-sm text-gray-600 mb-1">Social Risk Score</div>
+          <div>
+            <span id="sdoh-risk" class="px-3 py-1 rounded text-white font-bold text-lg">0</span>
+          </div>
+          <div id="risk-sdoh-label" class="text-sm font-medium mt-1"></div>
+        </div>
+        
+        <div class="text-center p-3 border rounded">
+          <div class="text-2xl mb-2">⚠️</div>
+          <div class="text-sm text-gray-600 mb-1">Total Risk Score</div>
+          <div>
+            <span id="total-risk" class="px-3 py-1 rounded text-white font-bold text-lg">0</span>
+          </div>
+          <div id="risk-combined-label" class="text-sm font-medium mt-1"></div>
+        </div>
       </div>
     </section>
 
-    <section id="export-buttons">
-      <button id="export-report" class="bg-blue-600 text-white px-4 py-2 rounded">
-        Export Report
+    <!-- Export Section -->
+    <section id="export-buttons" class="bg-white p-4 rounded shadow">
+      <button id="export-report" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-medium transition-colors">
+        <span data-i18n="export_button">Export Report</span>
       </button>
     </section>
   </main>

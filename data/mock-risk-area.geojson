@@ -1,11 +1,12 @@
-{
+{{
   "type": "FeatureCollection",
   "features": [
     {
       "type": "Feature",
       "properties": {
-        "riskLevel": "High",
-        "description": "Mock PM2.5 risk zone"
+        "name": "High Risk Area - Industrial Zone",
+        "risk_level": "high",
+        "description": "Elevated PM2.5 and industrial pollution levels"
       },
       "geometry": {
         "type": "Polygon",
@@ -15,6 +16,42 @@
           [121.5330, 25.0438],
           [121.5315, 25.0438],
           [121.5315, 25.0423]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Medium Risk Area - Urban Traffic",
+        "risk_level": "medium",
+        "description": "Moderate air pollution from traffic"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [121.5300, 25.0410],
+          [121.5315, 25.0410],
+          [121.5315, 25.0423],
+          [121.5300, 25.0423],
+          [121.5300, 25.0410]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Low Risk Area - Residential",
+        "risk_level": "low",
+        "description": "Clean air residential zone"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [121.5330, 25.0410],
+          [121.5345, 25.0410],
+          [121.5345, 25.0423],
+          [121.5330, 25.0423],
+          [121.5330, 25.0410]
         ]]
       }
     }

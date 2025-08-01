@@ -19,32 +19,64 @@ export function exportPDF(bundle) {
     }
   };
 
-  // ✅ Resident Name
-  const patient = bundle.entry.find(e => e.resource.resourceType === 'Patient');
+  // ✅ Resident Information
   docDefinition.content.push({
-    text: `Name: ${patient?.resource?.name?.[0]?.text || 'N/A'}`,
+    text: `Name: ${bundle.subject?.display || 'N/A'}`,
+    style: 'item'
+  });
+  docDefinition.content.push({
+    text: `Consent: ${bundle.subject?.consented ? 'Yes' : 'No'}`,
     style: 'item'
   });
 
   // ✅ Checklist Observations
-  docDefinition.content.push({ text: '\nChecklist Observations:', style: 'section' });
-  bundle.entry
-    .filter(e => e.resource.resourceType === 'Observation' && e.resource.code?.coding?.[0]?.code?.startsWith('chk-'))
-    .forEach(obs => {
+  const checklistObs = bundle.entry.filter(e => 
+    e.resource.resourceType === 'Observation' && 
+    e.resource.code?.coding?.[0]?.system === 'http://healthyhomes.local/checklist'
+  );
+  
+  if (checklistObs.length > 0) {
+    docDefinition.content.push({ text: '\nHome Inspection Checklist:', style: 'section' });
+    checklistObs.forEach(obs => {
       const label = obs.resource.code.text || 'Unnamed';
       const value = obs.resource.valueBoolean === true ? 'Yes' : 'No';
       docDefinition.content.push({ text: `• ${label}: ${value}`, style: 'item' });
     });
+  }
 
   // ✅ SDOH Responses
-  docDefinition.content.push({ text: '\nSDOH Responses:', style: 'section' });
-  bundle.entry
-    .filter(e => e.resource.resourceType === 'Observation' && e.resource.code?.coding?.[0]?.code?.startsWith('sdoh-'))
-    .forEach(obs => {
+  const sdohObs = bundle.entry.filter(e => 
+    e.resource.resourceType === 'Observation' && 
+    e.resource.code?.coding?.[0]?.system === 'http://healthyhomes.local/sdoh'
+  );
+  
+  if (sdohObs.length > 0) {
+    docDefinition.content.push({ text: '\nSocial Determinants of Health:', style: 'section' });
+    sdohObs.forEach(obs => {
       const label = obs.resource.code.text || 'Unnamed';
       const value = obs.resource.valueString || 'N/A';
       docDefinition.content.push({ text: `• ${label}: ${value}`, style: 'item' });
     });
+  }
+
+  // ✅ Risk Scores (if included)
+  const riskObs = bundle.entry.filter(e => 
+    e.resource.resourceType === 'Observation' && 
+    e.resource.code?.coding?.[0]?.system === 'http://healthyhomes.local/risk'
+  );
+  
+  if (riskObs.length > 0) {
+    docDefinition.content.push({ text: '\nRisk Assessment Scores:', style: 'section' });
+    riskObs.forEach(obs => {
+      const label = obs.resource.code.text || 'Risk Score';
+      const value = obs.resource.valueInteger || 0;
+      const riskLevel = value <= 33 ? 'Low' : value <= 66 ? 'Moderate' : 'High';
+      docDefinition.content.push({ 
+        text: `• ${label}: ${value} (${riskLevel})`, 
+        style: 'item' 
+      });
+    });
+  }
 
   // ✅ JSON Preview
   const jsonStr = JSON.stringify(bundle, null, 2);

@@ -60,6 +60,7 @@ export function setupRiskScoring() {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 function applyRiskBadge(score, scoreId, labelId) {
   const scoreEl = document.getElementById(scoreId);
   const labelEl = document.getElementById(labelId);
@@ -83,6 +84,8 @@ function applyRiskBadge(score, scoreId, labelId) {
 =======
 =======
 >>>>>>> parent of 68c3c67 (Enhance risk score output with labels and styling)
+=======
+>>>>>>> parent of 68c3c67 (Enhance risk score output with labels and styling)
 // ✅ Helper: apply risk color
 function applyRiskBadge(score, el) {
   el.textContent = score;
@@ -91,6 +94,9 @@ function applyRiskBadge(score, el) {
   else if (score <= 66) el.classList.add('bg-yellow-500');
   else el.classList.add('bg-red-600');
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 68c3c67 (Enhance risk score output with labels and styling)
+=======
 >>>>>>> parent of 68c3c67 (Enhance risk score output with labels and styling)
 =======
 >>>>>>> parent of 68c3c67 (Enhance risk score output with labels and styling)

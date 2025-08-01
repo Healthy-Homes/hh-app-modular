@@ -1,21 +1,28 @@
+import { setupLanguage } from './i18n.js';
+import { setupConsent } from './consent.js';
+import { loadChecklist } from './checklist-loader.js';
+import { loadSDOH } from './sdoh-loader.js';
+import { setupRiskScoring } from './risk-model.js';
+import { exportFHIRBundle } from './fhir-export.js';
+import { exportPDF } from './pdf-export.js';
+
 console.log('✅ Main.js loaded');
 
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('✅ DOM fully loaded');
 
   try {
-    setupLanguage();     // from i18n.js
-    setupConsent();      // from consent.js
+    setupLanguage();
+    setupConsent();
 
     await Promise.all([
-      loadChecklist(),   // from checklist-loader.js
-      loadSDOH(),        // from sdoh-loader.js
-      initializeMap()    // declared below
+      loadChecklist(),
+      loadSDOH(),
+      initializeMap()
     ]);
 
     console.log('✅ Checklist, SDOH, and Map loaded');
-
-    setupRiskScoring();  // from risk-model.js
+    setupRiskScoring();
 
   } catch (err) {
     console.error('❌ App load failed:', err);
@@ -24,23 +31,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   const exportBtn = document.getElementById('export-btn');
-  if (!exportBtn) {
-    console.warn('⚠️ Export button missing');
-    return;
+  if (exportBtn) {
+    exportBtn.addEventListener('click', async () => {
+      try {
+        const bundle = await exportFHIRBundle();
+        console.log('✅ FHIR Bundle ready:', bundle);
+
+        await waitForPdfMake();
+        exportPDF(bundle);
+      } catch (err) {
+        console.error('❌ Export failed:', err);
+        alert('Unable to generate report.');
+      }
+    });
   }
-
-  exportBtn.addEventListener('click', async () => {
-    try {
-      const bundle = await exportFHIRBundle();   // from fhir-export.js
-      console.log('✅ FHIR Bundle ready:', bundle);
-
-      await waitForPdfMake();
-      exportPDF(bundle);                         // from pdf-export.js
-    } catch (err) {
-      console.error('❌ Export failed:', err);
-      alert('Unable to generate report.');
-    }
-  });
 });
 
 function waitForPdfMake() {
@@ -60,14 +64,14 @@ function waitForPdfMake() {
   });
 }
 
-function initializeMap() {
+async function initializeMap() {
   const mapContainer = document.getElementById('map');
   if (!mapContainer) {
     console.error('Map container not found!');
     return;
   }
 
-  const fallbackCoords = [121.5315, 25.0423]; // NTU campus
+  const fallbackCoords = [121.5315, 25.0423];
 
   requestAnimationFrame(() => {
     const map = new maplibregl.Map({
@@ -82,15 +86,13 @@ function initializeMap() {
             attribution: '© OpenStreetMap contributors'
           }
         },
-        layers: [
-          {
-            id: 'osm-tiles',
-            type: 'raster',
-            source: 'rasterTiles',
-            minzoom: 0,
-            maxzoom: 19
-          }
-        ]
+        layers: [{
+          id: 'osm-tiles',
+          type: 'raster',
+          source: 'rasterTiles',
+          minzoom: 0,
+          maxzoom: 19
+        }]
       },
       center: fallbackCoords,
       zoom: 15

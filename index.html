@@ -8,27 +8,13 @@
   <link rel="icon" href="data:," />
   <script src="https://cdn.tailwindcss.com" defer></script>
 
-  <!-- ✅ CORS-safe MapLibre -->
   <link href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css" rel="stylesheet" />
   <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
 
-  <!-- ✅ PDF support -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
-  <!-- ✅ App styles -->
   <link rel="stylesheet" href="css/styles.css" />
-
-  <!-- ✅ App logic (correct order matters!) -->
-  <script defer src="js/i18n.js"></script>
-  <script defer src="js/consent.js"></script>
-  <script defer src="js/checklist-loader.js"></script>
-  <script defer src="js/sdoh-loader.js"></script>
-  <script defer src="js/risk-weights.js"></script>
-  <script defer src="js/risk-model.js"></script>
-  <script defer src="js/fhir-export.js"></script>
-  <script defer src="js/pdf-export.js"></script>
-  <script defer src="js/main.js"></script>
 </head>
 
 <body class="bg-gray-100 text-gray-900 min-h-screen">
@@ -68,14 +54,17 @@
       <div>
         <span data-i18n="riskHomeScore"><strong>🏠 Home Risk Score</strong></span>:
         <span id="home-risk" class="ml-2 px-2 py-1 rounded text-white"></span>
+        <span id="risk-home-label" class="ml-2 font-semibold"></span>
       </div>
       <div>
         <span data-i18n="riskSDOHScore"><strong>🌍 Social Risk Score</strong></span>:
         <span id="sdoh-risk" class="ml-2 px-2 py-1 rounded text-white"></span>
+        <span id="risk-sdoh-label" class="ml-2 font-semibold"></span>
       </div>
       <div>
         <span data-i18n="riskTotalScore"><strong>⚠️ Total Risk Score</strong></span>:
         <span id="total-risk" class="ml-2 px-2 py-1 rounded text-white"></span>
+        <span id="risk-combined-label" class="ml-2 font-semibold"></span>
       </div>
     </section>
 
@@ -85,5 +74,8 @@
       </button>
     </section>
   </main>
+
+  <!-- ✅ ES6 modules load after body -->
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>

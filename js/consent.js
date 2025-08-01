@@ -2,7 +2,7 @@ window.setupConsent = function () {
   const consentDiv = document.getElementById('consent-block');
   consentDiv.innerHTML = `
     <div class="mb-2">
-      <label>
+      <label>as
         <input type="checkbox" id="consent-checkbox" class="mr-2">
         <span data-i18n="consent_text">${getTranslation('consent_text')}</span>
       </label>

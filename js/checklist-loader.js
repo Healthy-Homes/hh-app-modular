@@ -1,8 +1,4 @@
-// js/checklist-loader.js
-import { getTranslation } from './i18n.js';
-import { RISK_WEIGHTS } from './risk-weights.js';
-
-export async function loadChecklist() {
+window.loadChecklist = async function () {
   const res = await fetch('data/checklist.csv');
   const text = await res.text();
 
@@ -28,7 +24,7 @@ export async function loadChecklist() {
       return;
     }
 
-    if (!(itemKey in RISK_WEIGHTS.checklist)) {
+    if (typeof RISK_WEIGHTS !== 'undefined' && !(itemKey in RISK_WEIGHTS.checklist)) {
       console.warn(`⚠️ itemKey "${itemKey}" not found in RISK_WEIGHTS.checklist`);
     }
 
@@ -54,4 +50,4 @@ export async function loadChecklist() {
   });
 
   console.log(`✅ Checklist loaded: ${lines.length - 1} items`);
-}
+};

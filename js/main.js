@@ -1,29 +1,22 @@
-import { loadChecklist } from './checklist-loader.js';
-import { loadSDOH } from './sdoh-loader.js';
-import { setupConsent } from './consent.js';
-import { setupLanguage } from './i18n.js';
-import { exportFHIRBundle } from './fhir-export.js';
-import { exportPDF } from './pdf-export.js';
-import { setupRiskScoring } from './risk-model.js';
-
 console.log('✅ Main.js loaded');
 
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('✅ DOM fully loaded');
 
   try {
-    setupLanguage();
-    setupConsent();
+    setupLanguage();     // from i18n.js
+    setupConsent();      // from consent.js
 
     await Promise.all([
-      loadChecklist(),
-      loadSDOH(),
-      initializeMap()
+      loadChecklist(),   // from checklist-loader.js
+      loadSDOH(),        // from sdoh-loader.js
+      initializeMap()    // declared below
     ]);
 
     console.log('✅ Checklist, SDOH, and Map loaded');
 
-    setupRiskScoring();
+    setupRiskScoring();  // from risk-model.js
+
   } catch (err) {
     console.error('❌ App load failed:', err);
     alert('App failed to load. Please refresh.');
@@ -38,11 +31,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   exportBtn.addEventListener('click', async () => {
     try {
-      const bundle = await exportFHIRBundle();
+      const bundle = await exportFHIRBundle();   // from fhir-export.js
       console.log('✅ FHIR Bundle ready:', bundle);
 
       await waitForPdfMake();
-      exportPDF(bundle);
+      exportPDF(bundle);                         // from pdf-export.js
     } catch (err) {
       console.error('❌ Export failed:', err);
       alert('Unable to generate report.');
@@ -67,15 +60,14 @@ function waitForPdfMake() {
   });
 }
 
-// ✅ Now using globally available maplibregl (from <script>)
-export function initializeMap() {
+function initializeMap() {
   const mapContainer = document.getElementById('map');
   if (!mapContainer) {
     console.error('Map container not found!');
     return;
   }
 
-  const fallbackCoords = [121.5315, 25.0423]; // NTU
+  const fallbackCoords = [121.5315, 25.0423]; // NTU campus
 
   requestAnimationFrame(() => {
     const map = new maplibregl.Map({
@@ -112,7 +104,7 @@ export function initializeMap() {
           map.setCenter([coords.longitude, coords.latitude]);
           map.setZoom(16);
         },
-        () => console.warn('Geolocation failed'),
+        () => console.warn('⚠️ Geolocation failed'),
         { timeout: 8000 }
       );
     }
@@ -162,9 +154,9 @@ export function initializeMap() {
         });
 
         mapContainer.appendChild(legend);
-        console.log('Mock risk polygon loaded with clean legend');
+        console.log('✅ Mock risk polygon loaded with clean legend');
       } catch (err) {
-        console.error('Failed to load GeoJSON risk data:', err);
+        console.error('❌ Failed to load GeoJSON risk data:', err);
       }
     });
   });

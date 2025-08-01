@@ -1,8 +1,8 @@
-export function exportFHIRBundle() {
+window.exportFHIRBundle = function () {
   const bundle = generateFHIRBundle();
   downloadFHIRJson(bundle);
   return bundle; // ✅ Returned for PDF export
-}
+};
 
 function generateFHIRBundle() {
   const name = document.getElementById('resident-name')?.value?.trim() || 'Unnamed';
@@ -56,7 +56,7 @@ function generateFHIRBundle() {
     });
   });
 
-  // ✅ SDOH Observations (fix: store human-readable text)
+  // ✅ SDOH Observations
   document.querySelectorAll('#sdoh-form select, #sdoh-form input').forEach((el, idx) => {
     const label = el.getAttribute('data-label') || `SDOH ${idx + 1}`;
     let value = '';
@@ -97,5 +97,5 @@ function downloadFHIRJson(bundle) {
   link.download = 'healthy-home-report.json';
   document.body.appendChild(link);
   link.click();
-  document.body.removeChild(link); // ✅ Clean up
+  document.body.removeChild(link);
 }

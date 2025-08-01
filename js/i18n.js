@@ -1,11 +1,7 @@
-import { loadChecklist } from './checklist-loader.js';
-import { loadSDOH } from './sdoh-loader.js';
-import { setupConsent } from './consent.js';
-
 let currentLang = 'en';
 let currentTranslations = {};
 
-export function setupLanguage() {
+window.setupLanguage = function () {
   const toggle = document.getElementById('language-toggle');
   if (!toggle) {
     console.warn('⚠️ #language-toggle element not found in DOM');
@@ -21,9 +17,9 @@ export function setupLanguage() {
   document.getElementById('lang-zh').addEventListener('click', () => switchLanguage('zh'));
 
   switchLanguage(currentLang); // Load default language
-}
+};
 
-export async function switchLanguage(lang) {
+window.switchLanguage = async function (lang) {
   currentLang = lang;
 
   try {
@@ -51,15 +47,15 @@ export async function switchLanguage(lang) {
   });
 
   // Reload dynamic content
-  await loadChecklist();
-  await loadSDOH();
-  setupConsent();
-}
+  if (typeof loadChecklist === 'function') await loadChecklist();
+  if (typeof loadSDOH === 'function') await loadSDOH();
+  if (typeof setupConsent === 'function') setupConsent();
+};
 
-export function getTranslation(key) {
+window.getTranslation = function (key) {
   return currentTranslations[key] || key;
-}
+};
 
-export function getCurrentLang() {
+window.getCurrentLang = function () {
   return currentLang;
-}
+};

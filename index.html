@@ -8,18 +8,27 @@
   <link rel="icon" href="data:," />
   <script src="https://cdn.tailwindcss.com" defer></script>
 
-  <!-- ✅ MapLibre 2.4.0 (non-module, CORS-safe) -->
+  <!-- ✅ CORS-safe MapLibre -->
   <link href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css" rel="stylesheet" />
   <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
 
-  <link rel="stylesheet" href="css/styles.css" />
-
-  <!-- ✅ Reliable pdfMake CDN -->
+  <!-- ✅ PDF support -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
-  <!-- ✅ App entry point (not a module anymore) -->
-  <script src="js/main.js" defer></script>
+  <!-- ✅ App styles -->
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <!-- ✅ App logic (correct order matters!) -->
+  <script defer src="js/i18n.js"></script>
+  <script defer src="js/consent.js"></script>
+  <script defer src="js/checklist-loader.js"></script>
+  <script defer src="js/sdoh-loader.js"></script>
+  <script defer src="js/risk-weights.js"></script>
+  <script defer src="js/risk-model.js"></script>
+  <script defer src="js/fhir-export.js"></script>
+  <script defer src="js/pdf-export.js"></script>
+  <script defer src="js/main.js"></script>
 </head>
 
 <body class="bg-gray-100 text-gray-900 min-h-screen">
@@ -28,33 +37,24 @@
   </header>
 
   <main class="p-4 space-y-6 max-w-4xl mx-auto">
-
-    <!-- ✅ Language Toggle Section -->
     <section id="language-toggle" class="mb-4"></section>
 
-    <!-- ✅ Consent Form -->
     <section id="consent-block" class="space-y-2">
       <label for="resident-name" data-i18n="residentNameLabel">Resident Name</label><br/>
       <input id="resident-name" type="text" placeholder="Enter resident name" class="border p-2 w-full" />
-
       <label class="block mt-2">
         <input type="checkbox" id="consent-checkbox" class="mr-2" />
         <span data-i18n="consentText">I consent to a home inspection and agree to share information for documentation purposes.</span>
       </label>
     </section>
 
-    <!-- ✅ Home Checklist Section -->
     <section id="checklist"></section>
-
-    <!-- ✅ SDOH Survey Section -->
     <section id="sdoh-form"></section>
 
-    <!-- ✅ Map Section -->
     <section id="map-section" class="mt-4 relative">
       <div id="map" class="h-64 w-full rounded shadow"></div>
     </section>
 
-    <!-- ✅ Risk Scoring Toggle Section -->
     <section id="risk-toggle-section" class="p-4 mt-4 border rounded bg-gray-50">
       <label class="flex items-center space-x-2">
         <input type="checkbox" id="risk-toggle" class="accent-blue-600" />
@@ -64,7 +64,6 @@
       </label>
     </section>
 
-    <!-- ✅ Risk Scoring Output Section (Fully Fixed) -->
     <section id="risk-score-output" class="hidden mt-4 p-4 border rounded bg-white shadow space-y-2">
       <div id="risk-home" class="flex items-center space-x-2">
         <span data-i18n="riskHomeScore"><strong>🏠 Home Risk Score</strong></span>:
@@ -83,13 +82,11 @@
       </div>
     </section>
 
-    <!-- ✅ Export Button Section -->
     <section id="export-buttons">
       <button id="export-btn" class="bg-blue-600 text-white px-4 py-2 rounded">
         Export Report
       </button>
     </section>
-
   </main>
 </body>
 </html>

@@ -1,7 +1,4 @@
-// js/sdoh-loader.js
-import { getTranslation } from './i18n.js';
-
-export async function loadSDOH() {
+window.loadSDOH = async function () {
   const res = await fetch('data/sdoh.csv');
   const text = await res.text();
 
@@ -9,7 +6,6 @@ export async function loadSDOH() {
   const container = document.getElementById('sdoh-form');
   container.innerHTML = ''; // Clear on reload
 
-  // ✅ Map header columns to indexes
   const headers = lines[0].split(',');
   const idxMap = {};
   headers.forEach((h, i) => (idxMap[h] = i));
@@ -49,7 +45,7 @@ export async function loadSDOH() {
     select.setAttribute('data-code-system', codeSystem);
 
     optionKeys.forEach(optKey => {
-      const shortKey = optKey.split('_').pop(); // ✅ Fix: use "opt1", "opt2", etc.
+      const shortKey = optKey.split('_').pop(); // e.g., "Always" from "opt1_Always"
       const option = document.createElement('option');
       option.value = shortKey;
       option.textContent = getTranslation(optKey);
@@ -63,4 +59,4 @@ export async function loadSDOH() {
   });
 
   console.log('✅ SDOH form loaded with short option keys matching risk weights');
-}
+};

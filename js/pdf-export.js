@@ -1,6 +1,4 @@
-// pdf-export.js
-
-export function exportPDF(bundle) {
+window.exportPDF = function (bundle) {
   try {
     console.log('📦 Bundle received in exportPDF:', bundle);
 
@@ -42,7 +40,7 @@ export function exportPDF(bundle) {
         }
       ],
       defaultStyle: {
-        fontSize: 10 // No font override
+        fontSize: 10
       }
     };
 
@@ -56,4 +54,4 @@ export function exportPDF(bundle) {
     console.error('❌ Error inside exportPDF():', err);
     alert('PDF export failed internally. Check console for details.');
   }
-}
+};

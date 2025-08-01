@@ -58,6 +58,7 @@ export function setupRiskScoring() {
   });
 }
 
+<<<<<<< HEAD
 function applyRiskBadge(score, scoreId, labelId) {
   const scoreEl = document.getElementById(scoreId);
   const labelEl = document.getElementById(labelId);
@@ -78,6 +79,15 @@ function applyRiskBadge(score, scoreId, labelId) {
   }
 
   scoreEl.textContent = score.toFixed(0);
+=======
+// ✅ Helper: apply risk color
+function applyRiskBadge(score, el) {
+  el.textContent = score;
+  el.classList.remove('bg-green-600', 'bg-yellow-500', 'bg-red-600');
+  if (score <= 33) el.classList.add('bg-green-600');
+  else if (score <= 66) el.classList.add('bg-yellow-500');
+  else el.classList.add('bg-red-600');
+>>>>>>> parent of 68c3c67 (Enhance risk score output with labels and styling)
 }
 
 function getChecklistResponses() {

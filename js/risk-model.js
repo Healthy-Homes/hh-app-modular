@@ -50,15 +50,25 @@ export function setupRiskScoring() {
     const totalScore = calculateRisk(checklist, sdoh);
 
     output.classList.remove('hidden');
+
     applyRiskBadge(homeScore, document.getElementById('home-risk'));
     applyRiskBadge(sdohScore, document.getElementById('sdoh-risk'));
     applyRiskBadge(totalScore, document.getElementById('total-risk'));
+
+    document.getElementById('risk-home-label').textContent = getRiskLabel(homeScore);
+    document.getElementById('risk-sdoh-label').textContent = getRiskLabel(sdohScore);
+    document.getElementById('risk-combined-label').textContent = getRiskLabel(totalScore);
   });
 }
 
-// ✅ Helper: apply risk color
+function getRiskLabel(score) {
+  if (score <= 33) return 'Low';
+  if (score <= 66) return 'Moderate';
+  return 'High';
+}
+
 function applyRiskBadge(score, el) {
-  el.textContent = score;
+  el.textContent = score.toFixed(0);
   el.classList.remove('bg-green-600', 'bg-yellow-500', 'bg-red-600');
   if (score <= 33) el.classList.add('bg-green-600');
   else if (score <= 66) el.classList.add('bg-yellow-500');

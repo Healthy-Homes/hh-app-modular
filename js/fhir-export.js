@@ -1,8 +1,8 @@
-window.exportFHIRBundle = function () {
+function exportFHIRBundle() {
   const bundle = generateFHIRBundle();
   downloadFHIRJson(bundle);
   return bundle; // ✅ Returned for PDF export
-};
+}
 
 function generateFHIRBundle() {
   const name = document.getElementById('resident-name')?.value?.trim() || 'Unnamed';
@@ -99,3 +99,5 @@ function downloadFHIRJson(bundle) {
   link.click();
   document.body.removeChild(link);
 }
+
+export { exportFHIRBundle };

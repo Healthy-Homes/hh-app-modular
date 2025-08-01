@@ -1,6 +1,7 @@
 let currentLang = 'en';
 let currentTranslations = {};
 
+// ✅ Public method to initialize language toggle buttons
 window.setupLanguage = function () {
   const toggle = document.getElementById('language-toggle');
   if (!toggle) {
@@ -19,6 +20,7 @@ window.setupLanguage = function () {
   switchLanguage(currentLang); // Load default language
 };
 
+// ✅ Switch language and reload dynamic content
 window.switchLanguage = async function (lang) {
   currentLang = lang;
 
@@ -52,10 +54,17 @@ window.switchLanguage = async function (lang) {
   if (typeof setupConsent === 'function') setupConsent();
 };
 
+// ✅ Translation lookup (UI use)
 window.getTranslation = function (key) {
   return currentTranslations[key] || key;
 };
 
+// ✅ Legacy global use
 window.getCurrentLang = function () {
   return currentLang;
 };
+
+// ✅ ES6 module export
+export function getLang() {
+  return currentLang;
+}

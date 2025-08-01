@@ -3,6 +3,8 @@ import { getLang } from './i18n.js';
 export function exportPDF(bundle) {
   console.log('📄 Starting PDF export...');
 
+  const lang = getLang(); // ✅ in case needed for multilingual titles in future
+
   const docDefinition = {
     content: [
       { text: 'Healthy Homes Report', style: 'header' },
@@ -17,50 +19,69 @@ export function exportPDF(bundle) {
     }
   };
 
-  // Add patient info
+  // ✅ Patient Info
   const patient = bundle.entry.find(e => e.resource.resourceType === 'Patient');
-  if (patient) {
+  if (patient?.resource?.name?.[0]?.text) {
     docDefinition.content.push({
-      text: `Name: ${patient.resource.name?.[0]?.text || 'N/A'}`,
+      text: `Name: ${patient.resource.name[0].text}`,
+      style: 'item'
+    });
+  } else {
+    docDefinition.content.push({
+      text: `Name: N/A`,
       style: 'item'
     });
   }
 
-  // Add checklist items
+  // ✅ Checklist Observations
   docDefinition.content.push({ text: '\nChecklist Observations:', style: 'section' });
+
   bundle.entry
-    .filter(e => e.resource.resourceType === 'Observation' && e.resource.code.coding[0].code.startsWith('chk-'))
+    .filter(e =>
+      e.resource.resourceType === 'Observation' &&
+      e.resource.code?.coding?.[0]?.code?.startsWith('chk-')
+    )
     .forEach(obs => {
+      const label = obs.resource.code.text || 'Unnamed';
+      const value = obs.resource.valueBoolean === true ? 'Yes' : 'No';
       docDefinition.content.push({
-        text: `• ${obs.resource.code.text}: ${obs.resource.valueBoolean ? 'Yes' : 'No'}`,
+        text: `• ${label}: ${value}`,
         style: 'item'
       });
     });
 
-  // Add SDOH items
+  // ✅ SDOH Observations
   docDefinition.content.push({ text: '\nSDOH Responses:', style: 'section' });
+
   bundle.entry
-    .filter(e => e.resource.resourceType === 'Observation' && e.resource.code.coding[0].code.startsWith('sdoh-'))
+    .filter(e =>
+      e.resource.resourceType === 'Observation' &&
+      e.resource.code?.coding?.[0]?.code?.startsWith('sdoh-')
+    )
     .forEach(obs => {
+      const label = obs.resource.code.text || 'Unnamed';
+      const value = obs.resource.valueString || 'N/A';
       docDefinition.content.push({
-        text: `• ${obs.resource.code.text}: ${obs.resource.valueString}`,
+        text: `• ${label}: ${value}`,
         style: 'item'
       });
     });
 
-  // Append QR of JSON payload
+  // ✅ JSON Preview Block (QR alternative)
   const jsonStr = JSON.stringify(bundle, null, 2);
-  const truncated = jsonStr.length > 3000 ? jsonStr.substring(0, 3000) + '\n...[truncated]' : jsonStr;
+  const preview = jsonStr.length > 3000
+    ? jsonStr.substring(0, 3000) + '\n...[truncated]'
+    : jsonStr;
 
   docDefinition.content.push({ text: '\nFHIR Bundle (Preview):', style: 'section' });
   docDefinition.content.push({
-    text: truncated,
+    text: preview,
     style: 'item',
     fontSize: 8
   });
 
-  // ✅ Create PDF
-  if (window.pdfMake) {
+  // ✅ Generate PDF
+  if (window.pdfMake && typeof window.pdfMake.createPdf === 'function') {
     pdfMake.createPdf(docDefinition).open();
     console.log('✅ PDF generated and opened');
   } else {

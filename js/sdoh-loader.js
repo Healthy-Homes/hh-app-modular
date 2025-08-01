@@ -1,4 +1,3 @@
-// sdoh-loader.js (ES6 module)
 import { getTranslation } from './i18n.js';
 
 export async function loadSDOH() {
@@ -53,9 +52,10 @@ export async function loadSDOH() {
     select.setAttribute('data-code-system', codeSystem);
 
     optionKeys.forEach(optKey => {
+      const shortKey = optKey.split('_').pop(); // Used only as value
       const option = document.createElement('option');
-      option.value = optKey;
-      option.textContent = getTranslation(optKey);
+      option.value = shortKey;
+      option.textContent = getTranslation(optKey); // Use full key
       select.appendChild(option);
     });
 
@@ -65,5 +65,5 @@ export async function loadSDOH() {
     container.appendChild(div);
   });
 
-  console.log('✅ SDOH form loaded with short option keys matching risk weights');
+  console.log('✅ SDOH form loaded with correct label and option translations');
 }

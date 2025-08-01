@@ -1,3 +1,4 @@
+// js/checklist-loader.js
 import { getTranslation } from './i18n.js';
 import { RISK_WEIGHTS } from './risk-weights.js';
 
@@ -7,15 +8,14 @@ export async function loadChecklist() {
 
   const lines = text.trim().split('\n');
   const container = document.getElementById('checklist');
-  container.innerHTML = ''; // clear on reload
+  container.innerHTML = ''; // Clear on reload
 
-  // Parse header
-  const headers = lines[0].split(',');
+  const headers = lines[0].split(',').map(h => h.trim());
   const idxMap = {};
   headers.forEach((h, i) => (idxMap[h] = i));
 
-  lines.slice(1).forEach(line => {
-    const cols = line.split(',');
+  lines.slice(1).forEach((line, rowIdx) => {
+    const cols = line.split(',').map(c => c.trim());
 
     const itemKey = cols[idxMap['item_key']];
     const labelKey = cols[idxMap['label_key']];
@@ -23,8 +23,13 @@ export async function loadChecklist() {
     const code = cols[idxMap['code']];
     const codeSystem = cols[idxMap['code_system']];
 
+    if (!itemKey || !labelKey) {
+      console.warn(`⚠️ Skipping row ${rowIdx + 2}: missing item_key or label_key`);
+      return;
+    }
+
     if (!(itemKey in RISK_WEIGHTS.checklist)) {
-      console.warn(`⚠️ Checklist itemKey "${itemKey}" not found in RISK_WEIGHTS.checklist`);
+      console.warn(`⚠️ itemKey "${itemKey}" not found in RISK_WEIGHTS.checklist`);
     }
 
     const div = document.createElement('div');
@@ -47,4 +52,6 @@ export async function loadChecklist() {
     div.appendChild(label);
     container.appendChild(div);
   });
+
+  console.log(`✅ Checklist loaded: ${lines.length - 1} items`);
 }

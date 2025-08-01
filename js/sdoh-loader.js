@@ -49,8 +49,9 @@ export async function loadSDOH() {
     select.setAttribute('data-code-system', codeSystem);
 
     optionKeys.forEach(optKey => {
+      const shortKey = optKey.split('_').pop(); // ✅ Fix: use "opt1", "opt2", etc.
       const option = document.createElement('option');
-      option.value = optKey; // ✅ Corrected to full response key
+      option.value = shortKey;
       option.textContent = getTranslation(optKey);
       select.appendChild(option);
     });
@@ -61,5 +62,5 @@ export async function loadSDOH() {
     container.appendChild(div);
   });
 
-  console.log('✅ SDOH form loaded with corrected option keys');
+  console.log('✅ SDOH form loaded with short option keys matching risk weights');
 }

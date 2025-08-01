@@ -84,13 +84,40 @@ export function setupRiskScoring() {
   console.groupEnd();
 }
 
-// ✅ Helper: apply risk color
+// ✅ Helper: apply risk color + text label
 function applyRiskBadge(score, el) {
   el.textContent = score;
-  el.classList.remove('bg-green-600', 'bg-yellow-500', 'bg-red-600');
-  if (score <= 33) el.classList.add('bg-green-600');
-  else if (score <= 66) el.classList.add('bg-yellow-500');
-  else el.classList.add('bg-red-600');
+  el.classList.remove(
+    'bg-green-600',
+    'bg-yellow-500',
+    'bg-red-600',
+    'text-black',
+    'text-white'
+  );
+
+  let levelText = '';
+  let labelColor = '';
+
+  if (score <= 33) {
+    el.classList.add('bg-green-600', 'text-white');
+    levelText = 'Low';
+    labelColor = 'text-green-700';
+  } else if (score <= 66) {
+    el.classList.add('bg-yellow-500', 'text-white');
+    levelText = 'Moderate';
+    labelColor = 'text-yellow-700';
+  } else {
+    el.classList.add('bg-red-600', 'text-white');
+    levelText = 'High';
+    labelColor = 'text-red-700';
+  }
+
+  // Look for corresponding label element
+  const labelEl = document.getElementById(`${el.id}-label`);
+  if (labelEl) {
+    labelEl.textContent = levelText;
+    labelEl.className = `ml-2 text-sm font-semibold ${labelColor}`;
+  }
 }
 
 // ✅ Helper: parse checklist checkboxes

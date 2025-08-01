@@ -62,17 +62,20 @@
 
     <!-- ✅ Risk Scoring Output Section -->
     <section id="risk-score-output" class="hidden mt-4 p-4 border rounded bg-white shadow space-y-2">
-      <div>
-        <span data-i18n="riskHomeScore"><strong>🏠 Home Risk Score</strong></span>:
-        <span id="home-risk" class="ml-2 px-2 py-1 rounded text-white"></span>
+      <div class="flex items-center space-x-2">
+        <span>🏠</span>
+        <span id="home-risk" class="px-2 py-1 rounded text-white font-bold"></span>
+        <span id="home-risk-label" class="text-sm font-semibold"></span>
       </div>
-      <div>
-        <span data-i18n="riskSDOHScore"><strong>🌍 Social Risk Score</strong></span>:
-        <span id="sdoh-risk" class="ml-2 px-2 py-1 rounded text-white"></span>
+      <div class="flex items-center space-x-2">
+        <span>🌍</span>
+        <span id="sdoh-risk" class="px-2 py-1 rounded text-white font-bold"></span>
+        <span id="sdoh-risk-label" class="text-sm font-semibold"></span>
       </div>
-      <div>
-        <span data-i18n="riskTotalScore"><strong>⚠️ Total Risk Score</strong></span>:
-        <span id="total-risk" class="ml-2 px-2 py-1 rounded text-white"></span>
+      <div class="flex items-center space-x-2">
+        <span>⚠️</span>
+        <span id="total-risk" class="px-2 py-1 rounded text-white font-bold"></span>
+        <span id="total-risk-label" class="text-sm font-semibold"></span>
       </div>
     </section>
 

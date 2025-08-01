@@ -55,16 +55,21 @@ window.switchLanguage = async function (lang) {
 };
 
 // ✅ Translation lookup (UI use)
-window.getTranslation = function (key) {
+function getTranslation(key) {
   return currentTranslations[key] || key;
-};
+}
 
 // ✅ Legacy global use
-window.getCurrentLang = function () {
+window.getTranslation = getTranslation;
+
+function getCurrentLang() {
   return currentLang;
-};
+}
+window.getCurrentLang = getCurrentLang;
 
 // ✅ ES6 module export
-export function getLang() {
+export { getLang, getTranslation };
+
+function getLang() {
   return currentLang;
 }

@@ -78,7 +78,8 @@ function applyRiskBadge(score, el) {
 function getChecklistResponses() {
   const result = {};
   document.querySelectorAll('#checklist input[type="checkbox"]').forEach(el => {
-    result[el.id] = el.checked;
+    const code = el.getAttribute('data-code');
+    if (code) result[code] = el.checked;
   });
   return result;
 }

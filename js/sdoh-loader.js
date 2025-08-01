@@ -1,9 +1,17 @@
-window.loadSDOH = async function () {
+// ✅ sdoh-loader.js (ES6 module)
+import { getTranslation } from './i18n.js';
+
+export async function loadSDOH() {
   const res = await fetch('data/sdoh.csv');
   const text = await res.text();
 
   const lines = text.trim().split('\n');
   const container = document.getElementById('sdoh-form');
+  if (!container) {
+    console.warn('⚠️ #sdoh-form element not found in DOM');
+    return;
+  }
+
   container.innerHTML = ''; // Clear on reload
 
   const headers = lines[0].split(',');
@@ -59,4 +67,4 @@ window.loadSDOH = async function () {
   });
 
   console.log('✅ SDOH form loaded with short option keys matching risk weights');
-};
+}

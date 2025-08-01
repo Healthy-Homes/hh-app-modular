@@ -1,3 +1,4 @@
+// sdoh-loader.js (ES6 module)
 import { getTranslation } from './i18n.js';
 
 export async function loadSDOH() {
@@ -51,10 +52,10 @@ export async function loadSDOH() {
     select.setAttribute('data-code', code);
     select.setAttribute('data-code-system', codeSystem);
 
-    optionKeys.forEach(optKey => {
+    optionKeys.forEach((optKey, index) => {
       const option = document.createElement('option');
       option.value = optKey;
-      option.textContent = getTranslation(optKey);
+      option.textContent = getTranslation(`${labelKey}_opt${index + 1}`);
       select.appendChild(option);
     });
 
@@ -64,5 +65,5 @@ export async function loadSDOH() {
     container.appendChild(div);
   });
 
-  console.log('✅ SDOH form loaded with correct label and option translations');
+  console.log('✅ SDOH form loaded with corrected label and option translations');
 }

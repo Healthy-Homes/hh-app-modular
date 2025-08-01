@@ -1,3 +1,5 @@
+// js/risk-model.js
+
 import { RISK_WEIGHTS } from './risk-weights.js';
 
 export function calculateRisk(checklistResponses, sdohResponses) {
@@ -5,26 +7,24 @@ export function calculateRisk(checklistResponses, sdohResponses) {
   let checklistPoints = 0;
   let sdohPoints = 0;
 
-  for (let [key, value] of Object.entries(checklistResponses)) {
-    if (value === true) {
+  for (const [key, value] of Object.entries(checklistResponses)) {
+    if (value === true && RISK_WEIGHTS.checklist[key] !== undefined) {
       const points = RISK_WEIGHTS.checklist[key];
-      if (points !== undefined) {
-        checklistPoints += points;
-        total += points;
-      }
+      checklistPoints += points;
+      total += points;
     }
   }
 
-  for (let [key, response] of Object.entries(sdohResponses)) {
-    const weightMap = RISK_WEIGHTS.sdoh[key];
-    if (weightMap && weightMap[response] !== undefined) {
-      const points = weightMap[response];
+  for (const [key, response] of Object.entries(sdohResponses)) {
+    const mapping = RISK_WEIGHTS.sdoh[key];
+    if (mapping && mapping[response] !== undefined) {
+      const points = mapping[response];
       sdohPoints += points;
       total += points;
     }
   }
 
-  return Math.min(total, 100);
+  return Math.min(total, 100); // Cap total score at 100
 }
 
 export function setupRiskScoring() {
@@ -61,10 +61,9 @@ export function setupRiskScoring() {
 function applyRiskBadge(score, scoreId, labelId) {
   const scoreEl = document.getElementById(scoreId);
   const labelEl = document.getElementById(labelId);
-
   if (!scoreEl || !labelEl) return;
 
-  // Clear background and color classes before applying new ones
+  // Reset classes
   scoreEl.className = 'px-2 py-1 rounded text-white';
 
   if (score <= 33) {
@@ -78,7 +77,6 @@ function applyRiskBadge(score, scoreId, labelId) {
     labelEl.textContent = 'High';
   }
 
-  // Assign score number
   scoreEl.textContent = score.toFixed(0);
 }
 

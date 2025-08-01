@@ -28,19 +28,19 @@ export const RISK_WEIGHTS = {
     flammableStorage: 5,
     indoorPollution: 5,
     petDander: 5,
-    fallPrevention: 5,
+    fallPrevention: 5
   },
   sdoh: {
-    foodInsecurity: { opt1: 10, opt2: 5, opt3: 0 },
+    foodInsecurity:       { opt1: 10, opt2: 5, opt3: 0 },
     housingStabilityAffordability: { opt1: 10, opt2: 5, opt3: 0 },
-    housingQualityMaintenance: { opt1: 10, opt2: 5, opt3: 0 },
-    utilityTransportBarriers: { opt1: 10, opt2: 5, opt3: 0 },
-    financialStrain: { opt1: 10, opt2: 5, opt3: 0 },
-    employmentStatus: { opt1: 10, opt2: 5, opt3: 0 },
-    socialConnection: { opt1: 10, opt2: 5, opt3: 0 },
-    educationLevel: { opt1: 10, opt2: 5, opt3: 0 },
-    healthcareAccess: { opt1: 10, opt2: 5, opt3: 0 },
-    neighborhoodSafety: { opt1: 10, opt2: 5, opt3: 0 },
-    languageBarrier: { opt1: 10, opt2: 5, opt3: 0 },
+    housingQualityMaintenance:     { opt1: 10, opt2: 5, opt3: 0 },
+    utilityTransportBarriers:      { opt1: 10, opt2: 5, opt3: 0 },
+    financialStrain:     { opt1: 10, opt2: 5, opt3: 0 },
+    employmentStatus:    { opt1: 10, opt2: 5, opt3: 0 },
+    socialConnection:    { opt1: 10, opt2: 5, opt3: 0 },
+    educationLevel:      { opt1: 10, opt2: 5, opt3: 0 },
+    healthcareAccess:    { opt1: 10, opt2: 5, opt3: 0 },
+    neighborhoodSafety:  { opt1: 10, opt2: 5, opt3: 0 },
+    languageBarrier:     { opt1: 10, opt2: 5, opt3: 0 }
   }
 };

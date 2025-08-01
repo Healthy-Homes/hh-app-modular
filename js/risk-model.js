@@ -84,40 +84,38 @@ export function setupRiskScoring() {
   console.groupEnd();
 }
 
-// ✅ Helper: apply risk color + text label
+// ✅ Risk badge with aligned and readable label
 function applyRiskBadge(score, el) {
-  el.textContent = score;
-  el.classList.remove(
-    'bg-green-600',
-    'bg-yellow-500',
-    'bg-red-600',
-    'text-black',
-    'text-white'
-  );
+  if (!el) return;
 
-  let levelText = '';
-  let labelColor = '';
+  el.textContent = ''; // Clear previous content
 
+  // Score number badge
+  const scoreSpan = document.createElement('span');
+  scoreSpan.textContent = score;
+  scoreSpan.className = 'px-2 py-1 rounded text-white font-bold';
+
+  // Determine color and label
+  let colorClass, labelText;
   if (score <= 33) {
-    el.classList.add('bg-green-600', 'text-white');
-    levelText = 'Low';
-    labelColor = 'text-green-700';
+    colorClass = 'bg-green-600';
+    labelText = 'Low';
   } else if (score <= 66) {
-    el.classList.add('bg-yellow-500', 'text-white');
-    levelText = 'Moderate';
-    labelColor = 'text-yellow-700';
+    colorClass = 'bg-yellow-500';
+    labelText = 'Moderate';
   } else {
-    el.classList.add('bg-red-600', 'text-white');
-    levelText = 'High';
-    labelColor = 'text-red-700';
+    colorClass = 'bg-red-600';
+    labelText = 'High';
   }
+  scoreSpan.classList.add(colorClass);
 
-  // Look for corresponding label element
-  const labelEl = document.getElementById(`${el.id}-label`);
-  if (labelEl) {
-    labelEl.textContent = levelText;
-    labelEl.className = `ml-2 text-sm font-semibold ${labelColor}`;
-  }
+  // Risk label next to number
+  const labelSpan = document.createElement('span');
+  labelSpan.textContent = labelText;
+  labelSpan.className = 'ml-2 text-gray-800 font-medium align-middle';
+
+  el.appendChild(scoreSpan);
+  el.appendChild(labelSpan);
 }
 
 // ✅ Helper: parse checklist checkboxes

@@ -73,7 +73,6 @@ export function setupRiskScoring() {
     updateRiskDisplay('total-risk', 'risk-combined-label', scores.total);
   });
 }
-}
 
 function updateRiskDisplay(scoreId, labelId, score) {
   const scoreEl = document.getElementById(scoreId);

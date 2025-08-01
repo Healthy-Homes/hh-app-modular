@@ -1,57 +1,70 @@
-window.exportPDF = function (bundle) {
-  try {
-    console.log('📦 Bundle received in exportPDF:', bundle);
+import { getLang } from './i18n.js';
 
-    // Extract basic metadata
-    const entryCount = Array.isArray(bundle.entry) ? bundle.entry.length : 0;
+export function exportPDF(bundle) {
+  console.log('📄 Starting PDF export...');
 
-    // Build human-readable content summary from checklist Observations
-    const items = (bundle.entry || [])
-      .filter(e => e.resource?.resourceType === 'Observation')
-      .map((e, idx) => {
-        const display = e.resource?.code?.coding?.[0]?.display || 'Unknown item';
-        const value = e.resource?.valueBoolean === true ? 'Yes' : 'No';
-        return `${idx + 1}. ${display}: ${value}`;
-      });
-
-    const docDefinition = {
-      content: [
-        { text: 'Healthy Homes Report', fontSize: 18, bold: true, margin: [0, 0, 0, 10] },
-
-        { text: 'FHIR Bundle Summary', fontSize: 14, bold: true, margin: [0, 10, 0, 5] },
-        {
-          ul: [
-            `Resource Type: ${bundle.resourceType || 'N/A'}`,
-            `Entries: ${entryCount}`
-          ]
-        },
-
-        { text: 'Checklist Observations', fontSize: 14, bold: true, margin: [0, 15, 0, 5] },
-        {
-          ul: items.length > 0 ? items : ['No checklist items found']
-        },
-
-        { text: '---', margin: [0, 15, 0, 15] },
-
-        { text: 'Full Bundle (JSON)', fontSize: 12, bold: true, margin: [0, 10, 0, 5] },
-        {
-          text: JSON.stringify(bundle, null, 2),
-          fontSize: 8
-        }
-      ],
-      defaultStyle: {
-        fontSize: 10
-      }
-    };
-
-    if (!window.pdfMake || typeof window.pdfMake.createPdf !== 'function') {
-      throw new Error('❌ pdfMake not available');
+  const docDefinition = {
+    content: [
+      { text: 'Healthy Homes Report', style: 'header' },
+      { text: new Date().toLocaleString(), style: 'subheader' },
+      { text: '\nResident Details:', style: 'section' }
+    ],
+    styles: {
+      header: { fontSize: 18, bold: true, margin: [0, 0, 0, 10] },
+      subheader: { fontSize: 12, italics: true, margin: [0, 0, 0, 10] },
+      section: { fontSize: 14, bold: true, margin: [0, 10, 0, 4] },
+      item: { margin: [0, 0, 0, 4] }
     }
+  };
 
-    window.pdfMake.createPdf(docDefinition).open();
-    console.log('✅ PDF opened');
-  } catch (err) {
-    console.error('❌ Error inside exportPDF():', err);
-    alert('PDF export failed internally. Check console for details.');
+  // Add patient info
+  const patient = bundle.entry.find(e => e.resource.resourceType === 'Patient');
+  if (patient) {
+    docDefinition.content.push({
+      text: `Name: ${patient.resource.name?.[0]?.text || 'N/A'}`,
+      style: 'item'
+    });
   }
-};
+
+  // Add checklist items
+  docDefinition.content.push({ text: '\nChecklist Observations:', style: 'section' });
+  bundle.entry
+    .filter(e => e.resource.resourceType === 'Observation' && e.resource.code.coding[0].code.startsWith('chk-'))
+    .forEach(obs => {
+      docDefinition.content.push({
+        text: `• ${obs.resource.code.text}: ${obs.resource.valueBoolean ? 'Yes' : 'No'}`,
+        style: 'item'
+      });
+    });
+
+  // Add SDOH items
+  docDefinition.content.push({ text: '\nSDOH Responses:', style: 'section' });
+  bundle.entry
+    .filter(e => e.resource.resourceType === 'Observation' && e.resource.code.coding[0].code.startsWith('sdoh-'))
+    .forEach(obs => {
+      docDefinition.content.push({
+        text: `• ${obs.resource.code.text}: ${obs.resource.valueString}`,
+        style: 'item'
+      });
+    });
+
+  // Append QR of JSON payload
+  const jsonStr = JSON.stringify(bundle, null, 2);
+  const truncated = jsonStr.length > 3000 ? jsonStr.substring(0, 3000) + '\n...[truncated]' : jsonStr;
+
+  docDefinition.content.push({ text: '\nFHIR Bundle (Preview):', style: 'section' });
+  docDefinition.content.push({
+    text: truncated,
+    style: 'item',
+    fontSize: 8
+  });
+
+  // ✅ Create PDF
+  if (window.pdfMake) {
+    pdfMake.createPdf(docDefinition).open();
+    console.log('✅ PDF generated and opened');
+  } else {
+    console.error('❌ pdfMake is not loaded');
+    alert('Unable to export PDF: pdfMake not loaded.');
+  }
+}

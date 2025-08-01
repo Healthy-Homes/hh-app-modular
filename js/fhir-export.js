@@ -1,4 +1,5 @@
-function exportFHIRBundle() {
+// ✅ js/fhir-export.js (MODULAR)
+export function exportFHIRBundle() {
   const bundle = generateFHIRBundle();
   downloadFHIRJson(bundle);
   return bundle; // ✅ Returned for PDF export
@@ -15,7 +16,6 @@ function generateFHIRBundle() {
     entry: []
   };
 
-  // ✅ Patient Resource
   bundle.entry.push({
     resource: {
       resourceType: 'Patient',
@@ -25,7 +25,6 @@ function generateFHIRBundle() {
     }
   });
 
-  // ✅ Consent Resource
   bundle.entry.push({
     resource: {
       resourceType: 'Consent',
@@ -36,7 +35,6 @@ function generateFHIRBundle() {
     }
   });
 
-  // ✅ Checklist Observations
   document.querySelectorAll('#checklist input[type="checkbox"]').forEach((checkbox, idx) => {
     const label = checkbox.getAttribute('data-label') || `Item ${idx + 1}`;
     bundle.entry.push({
@@ -56,7 +54,6 @@ function generateFHIRBundle() {
     });
   });
 
-  // ✅ SDOH Observations
   document.querySelectorAll('#sdoh-form select, #sdoh-form input').forEach((el, idx) => {
     const label = el.getAttribute('data-label') || `SDOH ${idx + 1}`;
     let value = '';
@@ -99,5 +96,3 @@ function downloadFHIRJson(bundle) {
   link.click();
   document.body.removeChild(link);
 }
-
-export { exportFHIRBundle };

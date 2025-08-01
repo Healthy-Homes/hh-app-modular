@@ -3,7 +3,7 @@ import { getLang } from './i18n.js';
 export function exportPDF(bundle) {
   console.log('📄 Starting PDF export...');
 
-  const lang = getLang(); // ✅ in case needed for multilingual titles in future
+  const lang = getLang(); // ✅ Future-proofing for multilingual headers
 
   const docDefinition = {
     content: [
@@ -19,69 +19,41 @@ export function exportPDF(bundle) {
     }
   };
 
-  // ✅ Patient Info
+  // ✅ Resident Name
   const patient = bundle.entry.find(e => e.resource.resourceType === 'Patient');
-  if (patient?.resource?.name?.[0]?.text) {
-    docDefinition.content.push({
-      text: `Name: ${patient.resource.name[0].text}`,
-      style: 'item'
-    });
-  } else {
-    docDefinition.content.push({
-      text: `Name: N/A`,
-      style: 'item'
-    });
-  }
+  docDefinition.content.push({
+    text: `Name: ${patient?.resource?.name?.[0]?.text || 'N/A'}`,
+    style: 'item'
+  });
 
   // ✅ Checklist Observations
   docDefinition.content.push({ text: '\nChecklist Observations:', style: 'section' });
-
   bundle.entry
-    .filter(e =>
-      e.resource.resourceType === 'Observation' &&
-      e.resource.code?.coding?.[0]?.code?.startsWith('chk-')
-    )
+    .filter(e => e.resource.resourceType === 'Observation' && e.resource.code?.coding?.[0]?.code?.startsWith('chk-'))
     .forEach(obs => {
       const label = obs.resource.code.text || 'Unnamed';
       const value = obs.resource.valueBoolean === true ? 'Yes' : 'No';
-      docDefinition.content.push({
-        text: `• ${label}: ${value}`,
-        style: 'item'
-      });
+      docDefinition.content.push({ text: `• ${label}: ${value}`, style: 'item' });
     });
 
-  // ✅ SDOH Observations
+  // ✅ SDOH Responses
   docDefinition.content.push({ text: '\nSDOH Responses:', style: 'section' });
-
   bundle.entry
-    .filter(e =>
-      e.resource.resourceType === 'Observation' &&
-      e.resource.code?.coding?.[0]?.code?.startsWith('sdoh-')
-    )
+    .filter(e => e.resource.resourceType === 'Observation' && e.resource.code?.coding?.[0]?.code?.startsWith('sdoh-'))
     .forEach(obs => {
       const label = obs.resource.code.text || 'Unnamed';
       const value = obs.resource.valueString || 'N/A';
-      docDefinition.content.push({
-        text: `• ${label}: ${value}`,
-        style: 'item'
-      });
+      docDefinition.content.push({ text: `• ${label}: ${value}`, style: 'item' });
     });
 
-  // ✅ JSON Preview Block (QR alternative)
+  // ✅ JSON Preview
   const jsonStr = JSON.stringify(bundle, null, 2);
-  const preview = jsonStr.length > 3000
-    ? jsonStr.substring(0, 3000) + '\n...[truncated]'
-    : jsonStr;
-
+  const preview = jsonStr.length > 3000 ? jsonStr.substring(0, 3000) + '\n...[truncated]' : jsonStr;
   docDefinition.content.push({ text: '\nFHIR Bundle (Preview):', style: 'section' });
-  docDefinition.content.push({
-    text: preview,
-    style: 'item',
-    fontSize: 8
-  });
+  docDefinition.content.push({ text: preview, style: 'item', fontSize: 8 });
 
-  // ✅ Generate PDF
-  if (window.pdfMake && typeof window.pdfMake.createPdf === 'function') {
+  // ✅ Render
+  if (window.pdfMake?.createPdf) {
     pdfMake.createPdf(docDefinition).open();
     console.log('✅ PDF generated and opened');
   } else {

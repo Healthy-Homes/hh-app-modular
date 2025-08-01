@@ -1,17 +1,31 @@
-window.setupConsent = function () {
-  const consentDiv = document.getElementById('consent-block');
-  consentDiv.innerHTML = `
-    <div class="mb-2">
-      <label>as
-        <input type="checkbox" id="consent-checkbox" class="mr-2">
-        <span data-i18n="consent_text">${getTranslation('consent_text')}</span>
-      </label>
-    </div>
-    <div>
-      <label for="resident-name">
-        <span data-i18n="resident_name_label">${getTranslation('resident_name_label')}</span>:
-        <input id="resident-name" type="text" class="ml-2 p-1 border rounded w-64" />
-      </label>
-    </div>
-  `;
-};
+// ✅ consent.js (ES6 module)
+
+import { getTranslation } from './i18n.js';
+
+function setupConsent() {
+  const checkbox = document.getElementById('consent-checkbox');
+  const nameInput = document.getElementById('resident-name');
+  const container = document.getElementById('consent-section');
+
+  if (!checkbox || !nameInput || !container) {
+    console.warn('⚠️ Consent UI elements not found in DOM');
+    return;
+  }
+
+  // Apply translated placeholder and label if available
+  const label = container.querySelector('label[for="consent-checkbox"]');
+  if (label) {
+    label.textContent = getTranslation('consentLabel') || 'Consent to inspection';
+  }
+
+  nameInput.setAttribute(
+    'placeholder',
+    getTranslation('residentNamePlaceholder') || 'Full name of resident'
+  );
+
+  checkbox.addEventListener('change', () => {
+    console.log('📝 Consent checkbox changed:', checkbox.checked);
+  });
+}
+
+export { setupConsent };

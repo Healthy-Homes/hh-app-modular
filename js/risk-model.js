@@ -1,5 +1,3 @@
-// js/risk-model.js
-
 import { RISK_WEIGHTS } from './risk-weights.js';
 
 export function calculateRisk(checklistResponses, sdohResponses) {
@@ -52,40 +50,12 @@ export function setupRiskScoring() {
     const totalScore = calculateRisk(checklist, sdoh);
 
     output.classList.remove('hidden');
-    applyRiskBadge(homeScore, 'risk-home-score', 'risk-home-label');
-    applyRiskBadge(sdohScore, 'risk-sdoh-score', 'risk-sdoh-label');
-    applyRiskBadge(totalScore, 'risk-combined-score', 'risk-combined-label');
+    applyRiskBadge(homeScore, document.getElementById('home-risk'));
+    applyRiskBadge(sdohScore, document.getElementById('sdoh-risk'));
+    applyRiskBadge(totalScore, document.getElementById('total-risk'));
   });
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-function applyRiskBadge(score, scoreId, labelId) {
-  const scoreEl = document.getElementById(scoreId);
-  const labelEl = document.getElementById(labelId);
-  if (!scoreEl || !labelEl) return;
-
-  // Reset classes
-  scoreEl.className = 'px-2 py-1 rounded text-white';
-
-  if (score <= 33) {
-    scoreEl.classList.add('bg-green-600');
-    labelEl.textContent = 'Low';
-  } else if (score <= 66) {
-    scoreEl.classList.add('bg-yellow-500');
-    labelEl.textContent = 'Moderate';
-  } else {
-    scoreEl.classList.add('bg-red-600');
-    labelEl.textContent = 'High';
-  }
-
-  scoreEl.textContent = score.toFixed(0);
-=======
-=======
->>>>>>> parent of 68c3c67 (Enhance risk score output with labels and styling)
-=======
->>>>>>> parent of 68c3c67 (Enhance risk score output with labels and styling)
 // ✅ Helper: apply risk color
 function applyRiskBadge(score, el) {
   el.textContent = score;
@@ -93,13 +63,6 @@ function applyRiskBadge(score, el) {
   if (score <= 33) el.classList.add('bg-green-600');
   else if (score <= 66) el.classList.add('bg-yellow-500');
   else el.classList.add('bg-red-600');
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> parent of 68c3c67 (Enhance risk score output with labels and styling)
-=======
->>>>>>> parent of 68c3c67 (Enhance risk score output with labels and styling)
-=======
->>>>>>> parent of 68c3c67 (Enhance risk score output with labels and styling)
 }
 
 function getChecklistResponses() {

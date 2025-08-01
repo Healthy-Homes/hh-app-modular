@@ -7,15 +7,19 @@
 
   <link rel="icon" href="data:," />
   <script src="https://cdn.tailwindcss.com" defer></script>
-  <link href="https://unpkg.com/maplibre-gl@3.3.1/dist/maplibre-gl.css" rel="stylesheet" />
+
+  <!-- ✅ MapLibre 2.4.0 (non-module, CORS-safe) -->
+  <link href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css" rel="stylesheet" />
+  <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
+
   <link rel="stylesheet" href="css/styles.css" />
 
   <!-- ✅ Reliable pdfMake CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
-  <!-- ✅ App entry point -->
-  <script type="module" src="js/main.js" defer></script>
+  <!-- ✅ App entry point (not a module anymore) -->
+  <script src="js/main.js" defer></script>
 </head>
 
 <body class="bg-gray-100 text-gray-900 min-h-screen">
@@ -62,25 +66,21 @@
 
     <!-- ✅ Risk Scoring Output Section (Fully Fixed) -->
     <section id="risk-score-output" class="hidden mt-4 p-4 border rounded bg-white shadow space-y-2">
-
       <div id="risk-home" class="flex items-center space-x-2">
         <span data-i18n="riskHomeScore"><strong>🏠 Home Risk Score</strong></span>:
         <span id="risk-home-score" class="px-2 py-1 rounded text-white bg-gray-600">--</span>
         <span id="risk-home-label" class="font-semibold text-gray-800">N/A</span>
       </div>
-
       <div id="risk-sdoh" class="flex items-center space-x-2">
         <span data-i18n="riskSDOHScore"><strong>🌍 Social Risk Score</strong></span>:
         <span id="risk-sdoh-score" class="px-2 py-1 rounded text-white bg-gray-600">--</span>
         <span id="risk-sdoh-label" class="font-semibold text-gray-800">N/A</span>
       </div>
-
       <div id="risk-combined" class="flex items-center space-x-2">
         <span data-i18n="riskTotalScore"><strong>⚠️ Total Risk Score</strong></span>:
         <span id="risk-combined-score" class="px-2 py-1 rounded text-white bg-gray-600">--</span>
         <span id="risk-combined-label" class="font-semibold text-gray-800">N/A</span>
       </div>
-
     </section>
 
     <!-- ✅ Export Button Section -->

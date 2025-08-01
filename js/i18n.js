@@ -1,9 +1,12 @@
 let currentLang = 'en';
 let currentTranslations = {};
 
-function setupLanguage() {
+export function setupLanguage() {
   const toggle = document.getElementById('language-toggle');
-  if (!toggle) return;
+  if (!toggle) {
+    console.warn('⚠️ #language-toggle element not found in DOM');
+    return;
+  }
 
   toggle.innerHTML = `
     <button id="lang-en" class="bg-gray-200 px-3 py-1 rounded mr-2">English</button>
@@ -16,18 +19,19 @@ function setupLanguage() {
   switchLanguage(currentLang);
 }
 
-async function switchLanguage(lang) {
+export async function switchLanguage(lang) {
   currentLang = lang;
 
   try {
     const res = await fetch(`lang/${lang}.json`);
+    if (!res.ok) throw new Error(`Could not load lang/${lang}.json`);
     currentTranslations = await res.json();
-  } catch {
-    console.warn(`⚠️ Failed to load ${lang}.json`);
+  } catch (err) {
+    console.error(`⚠️ Failed to load ${lang}, falling back to English`, err);
     if (lang !== 'en') {
-      const fallback = await fetch('lang/en.json');
-      currentTranslations = await fallback.json();
       currentLang = 'en';
+      const res = await fetch('lang/en.json');
+      currentTranslations = await res.json();
     }
   }
 
@@ -46,12 +50,10 @@ async function switchLanguage(lang) {
   if (typeof setupConsent === 'function') setupConsent();
 }
 
-function getTranslation(key) {
+export function getTranslation(key) {
   return currentTranslations[key] || key;
 }
 
-function getLang() {
+export function getLang() {
   return currentLang;
 }
-
-export { setupLanguage, switchLanguage, getTranslation, getLang };

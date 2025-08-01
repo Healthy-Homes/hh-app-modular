@@ -1,40 +1,35 @@
-import { getLang, getTranslation } from './i18n.js';
+import { getTranslation } from './i18n.js';
+
+let checklistData = {};
 
 export async function loadChecklist() {
-  const response = await fetch('checklist.csv');
-  const csv = await response.text();
-  const rows = csv.trim().split('\n').map(r => r.split(','));
+  const res = await fetch('data/checklist.csv');
+  const text = await res.text();
+  const rows = text.trim().split('\n').slice(1);
 
-  const container = document.getElementById('checklist-items');
-  if (!container) return;
+  const container = document.getElementById('checklist');
   container.innerHTML = '';
+  checklistData = {};
 
-  rows.slice(1).forEach(([id, label, description]) => {
-    const labelText = getTranslation(`label_${id}`) || label;
-    const descText = getTranslation(`desc_${id}`) || description;
+  for (const row of rows) {
+    const [code] = row.split(',');
+    const label = getTranslation(`label_${code}`) || code;
 
     const div = document.createElement('div');
-    div.className = 'mb-4';
-
-    const labelEl = document.createElement('label');
-    labelEl.className = 'block font-semibold';
-    labelEl.textContent = labelText;
-
-    const descEl = document.createElement('p');
-    descEl.className = 'text-sm text-gray-600';
-    descEl.textContent = descText;
-
-    const input = document.createElement('input');
-    input.type = 'checkbox';
-    input.id = id;
-    input.name = id;
-    input.className = 'mr-2';
-
-    div.appendChild(input);
-    div.appendChild(labelEl);
-    div.appendChild(descEl);
+    div.className = 'mb-2';
+    div.innerHTML = `
+      <label>
+        <input type="checkbox" id="${code}" />
+        ${label}
+      </label>`;
     container.appendChild(div);
-  });
 
-  console.log('✅ Checklist loaded and translated');
+    document.getElementById(code).addEventListener('change', (e) => {
+      checklistData[code] = e.target.checked;
+    });
+  }
+}
+
+export function getChecklistData() {
+  return checklistData;
 }

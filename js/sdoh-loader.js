@@ -1,39 +1,47 @@
-import { getLang, getTranslation } from './i18n.js';
+import { getTranslation } from './i18n.js';
+
+let sdohData = {};
 
 export async function loadSDOH() {
-  const response = await fetch('sdoh.csv');
-  const csv = await response.text();
-  const rows = csv.trim().split('\n').map(r => r.split(','));
+  const res = await fetch('data/sdoh.csv');
+  const text = await res.text();
+  const rows = text.trim().split('\n').slice(1);
 
-  const container = document.getElementById('sdoh-form');
-  if (!container) return;
-
+  const container = document.getElementById('sdoh');
   container.innerHTML = '';
+  sdohData = {};
 
-  rows.slice(1).forEach(([id, type, value]) => {
-    const labelKey = `${id}_label`;
-    const labelText = getTranslation(labelKey);
+  let currentLabel = null;
 
-    if (!container.querySelector(`#${id}`)) {
-      const label = document.createElement('label');
-      label.textContent = labelText;
-      label.setAttribute('for', id);
-      label.classList.add('block', 'mt-4', 'font-semibold');
-      container.appendChild(label);
+  for (const row of rows) {
+    const [questionCode, label, value] = row.split(',');
+    if (label) currentLabel = label;
 
-      const select = document.createElement('select');
-      select.id = id;
-      select.name = id;
-      select.classList.add('w-full', 'border', 'p-2', 'rounded');
-      container.appendChild(select);
-    }
+    const translatedLabel = getTranslation(`${questionCode}_label`);
+    const translatedOption = getTranslation(`${questionCode}_opt${value}`);
 
-    const opt = document.createElement('option');
-    const optKey = `${id}_opt${value}`;
-    opt.value = optKey;
-    opt.textContent = getTranslation(optKey);
-    container.querySelector(`#${id}`).appendChild(opt);
-  });
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = questionCode;
+    radio.value = translatedOption;
+    radio.id = `${questionCode}_${value}`;
 
-  console.log('✅ SDOH form loaded and translated');
+    radio.addEventListener('change', () => {
+      sdohData[questionCode] = translatedOption;
+    });
+
+    const labelEl = document.createElement('label');
+    labelEl.htmlFor = radio.id;
+    labelEl.textContent = translatedOption;
+
+    const div = document.createElement('div');
+    div.appendChild(radio);
+    div.appendChild(labelEl);
+
+    container.appendChild(div);
+  }
+}
+
+export function getSDOHData() {
+  return sdohData;
 }

@@ -52,10 +52,9 @@ export async function loadSDOH() {
     select.setAttribute('data-code-system', codeSystem);
 
     optionKeys.forEach(optKey => {
-      const shortKey = optKey.split('_').pop(); // Used only as value
       const option = document.createElement('option');
-      option.value = shortKey;
-      option.textContent = getTranslation(optKey); // Use full key
+      option.value = optKey;
+      option.textContent = getTranslation(optKey);
       select.appendChild(option);
     });
 

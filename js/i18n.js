@@ -1,4 +1,3 @@
-// i18n.js
 let currentLang = 'en';
 let currentTranslations = {};
 
@@ -35,6 +34,8 @@ async function switchLanguage(lang) {
       currentTranslations = await res.json();
     }
   }
+
+  document.documentElement.setAttribute('lang', currentLang); // ✅ Bonus: useful for debugging and accessibility
 
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');

@@ -1,4 +1,3 @@
-// checklist-loader.js (ES6 module)
 import { getTranslation } from './i18n.js';
 
 export async function loadChecklist() {
@@ -20,7 +19,7 @@ export async function loadChecklist() {
     checklistEl.className = 'grid grid-cols-1 gap-2';
 
     items.forEach(([code, label]) => {
-      const translatedLabel = getTranslation(`label_${code}`) || label;
+      const translatedLabel = getTranslation(code) || label;
 
       const wrapper = document.createElement('label');
       wrapper.className = 'flex items-center space-x-2';

@@ -1,13 +1,9 @@
 let currentLang = 'en';
 let currentTranslations = {};
 
-// ✅ Initialize language toggle buttons
 function setupLanguage() {
   const toggle = document.getElementById('language-toggle');
-  if (!toggle) {
-    console.warn('⚠️ #language-toggle element not found in DOM');
-    return;
-  }
+  if (!toggle) return;
 
   toggle.innerHTML = `
     <button id="lang-en" class="bg-gray-200 px-3 py-1 rounded mr-2">English</button>
@@ -17,27 +13,23 @@ function setupLanguage() {
   document.getElementById('lang-en').addEventListener('click', () => switchLanguage('en'));
   document.getElementById('lang-zh').addEventListener('click', () => switchLanguage('zh'));
 
-  switchLanguage(currentLang); // Initial load
+  switchLanguage(currentLang);
 }
 
-// ✅ Switch language and reload UI
 async function switchLanguage(lang) {
   currentLang = lang;
 
   try {
     const res = await fetch(`lang/${lang}.json`);
-    if (!res.ok) throw new Error(`Could not load lang/${lang}.json`);
     currentTranslations = await res.json();
-  } catch (err) {
-    console.error(`⚠️ Failed to load ${lang}, falling back to English`, err);
+  } catch {
+    console.warn(`⚠️ Failed to load ${lang}.json`);
     if (lang !== 'en') {
+      const fallback = await fetch('lang/en.json');
+      currentTranslations = await fallback.json();
       currentLang = 'en';
-      const res = await fetch('lang/en.json');
-      currentTranslations = await res.json();
     }
   }
-
-  document.documentElement.setAttribute('lang', currentLang); // Helps with a11y/debug
 
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
@@ -54,20 +46,12 @@ async function switchLanguage(lang) {
   if (typeof setupConsent === 'function') setupConsent();
 }
 
-// ✅ Translate a key or fallback to original
 function getTranslation(key) {
   return currentTranslations[key] || key;
 }
 
-// ✅ Expose current language
 function getLang() {
   return currentLang;
 }
 
-// ✅ Global fallback for legacy use (optional)
-window.setupLanguage = setupLanguage;
-window.getTranslation = getTranslation;
-window.getLang = getLang;
-
-// ✅ ES6 exports
 export { setupLanguage, switchLanguage, getTranslation, getLang };

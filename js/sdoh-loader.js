@@ -35,5 +35,5 @@ export async function loadSDOH() {
     container.querySelector(`#${id}`).appendChild(opt);
   });
 
-  console.log('✅ SDOH form loaded with corrected label and option translations');
+  console.log('✅ SDOH form loaded and translated');
 }

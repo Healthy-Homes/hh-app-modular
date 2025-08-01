@@ -1,9 +1,14 @@
 /* Base tweaks */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   font-family: system-ui, sans-serif;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
   background-color: #f3f4f6; /* Tailwind gray-100 equivalent */
 }
 
@@ -51,7 +56,7 @@ main {
   line-height: 1.25rem;
 }
 
-/* Risk polygon layer (if using CSS-based overlay, future proofing) */
+/* Risk polygon layer (future-proofing) */
 .risk-polygon-high {
   fill: rgba(255, 0, 0, 0.4);
   stroke: rgba(255, 0, 0, 0.8);
@@ -68,7 +73,7 @@ main {
   border-radius: 0.5rem;
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   z-index: 600;
 }
 
@@ -86,8 +91,8 @@ main {
 /* Risk Scoring UI Styles          */
 /* ─────────────────────────────── */
 
-/* Score value badge */
-#risk-score-output span {
+/* Score value badge (numeric span) */
+.score-badge {
   display: inline-block;
   min-width: 2rem;
   padding: 0.25rem 0.5rem;
@@ -95,6 +100,12 @@ main {
   text-align: center;
   font-weight: bold;
   color: white;
+}
+
+/* Label span (clarified if needed) */
+.score-label {
+  font-weight: 600;
+  color: #1f2937; /* Tailwind gray-800 */
 }
 
 /* Color codes for risk score levels */
@@ -106,4 +117,14 @@ main {
 }
 .bg-red-600 {
   background-color: #dc2626; /* Tailwind red-600 */
+}
+
+/* Optional: visually hidden class for screen readers */
+.visually-hidden {
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+  border: 0;
 }

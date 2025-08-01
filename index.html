@@ -60,23 +60,27 @@
       </label>
     </section>
 
-    <!-- ✅ Risk Scoring Output Section (Fixed) -->
+    <!-- ✅ Risk Scoring Output Section (Fully Fixed) -->
     <section id="risk-score-output" class="hidden mt-4 p-4 border rounded bg-white shadow space-y-2">
-      <div class="flex items-center space-x-2">
+
+      <div id="risk-home" class="flex items-center space-x-2">
         <span data-i18n="riskHomeScore"><strong>🏠 Home Risk Score</strong></span>:
-        <span id="home-risk" class="ml-2 px-2 py-1 rounded text-white"></span>
-        <span id="home-risk-label" class="text-black font-semibold"></span>
+        <span id="risk-home-score" class="px-2 py-1 rounded text-white bg-gray-600">--</span>
+        <span id="risk-home-label" class="font-semibold text-gray-800">N/A</span>
       </div>
-      <div class="flex items-center space-x-2">
+
+      <div id="risk-sdoh" class="flex items-center space-x-2">
         <span data-i18n="riskSDOHScore"><strong>🌍 Social Risk Score</strong></span>:
-        <span id="sdoh-risk" class="ml-2 px-2 py-1 rounded text-white"></span>
-        <span id="sdoh-risk-label" class="text-black font-semibold"></span>
+        <span id="risk-sdoh-score" class="px-2 py-1 rounded text-white bg-gray-600">--</span>
+        <span id="risk-sdoh-label" class="font-semibold text-gray-800">N/A</span>
       </div>
-      <div class="flex items-center space-x-2">
+
+      <div id="risk-combined" class="flex items-center space-x-2">
         <span data-i18n="riskTotalScore"><strong>⚠️ Total Risk Score</strong></span>:
-        <span id="total-risk" class="ml-2 px-2 py-1 rounded text-white"></span>
-        <span id="total-risk-label" class="text-black font-semibold"></span>
+        <span id="risk-combined-score" class="px-2 py-1 rounded text-white bg-gray-600">--</span>
+        <span id="risk-combined-label" class="font-semibold text-gray-800">N/A</span>
       </div>
+
     </section>
 
     <!-- ✅ Export Button Section -->

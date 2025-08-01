@@ -1,4 +1,3 @@
-// js/risk-model.js
 import { RISK_WEIGHTS } from './risk-weights.js';
 
 export function calculateRisk(checklistResponses, sdohResponses) {
@@ -53,9 +52,9 @@ export function setupRiskScoring() {
     const totalScore = calculateRisk(checklist, sdoh);
 
     output.classList.remove('hidden');
-    applyRiskBadge(homeScore, 'home-risk', 'home-risk-label');
-    applyRiskBadge(sdohScore, 'sdoh-risk', 'sdoh-risk-label');
-    applyRiskBadge(totalScore, 'total-risk', 'total-risk-label');
+    applyRiskBadge(homeScore, 'risk-home-score', 'risk-home-label');
+    applyRiskBadge(sdohScore, 'risk-sdoh-score', 'risk-sdoh-label');
+    applyRiskBadge(totalScore, 'risk-combined-score', 'risk-combined-label');
   });
 }
 
@@ -65,19 +64,22 @@ function applyRiskBadge(score, scoreId, labelId) {
 
   if (!scoreEl || !labelEl) return;
 
-  scoreEl.textContent = score;
-  labelEl.textContent = getRiskLevelText(score);
+  // Clear background and color classes before applying new ones
+  scoreEl.className = 'px-2 py-1 rounded text-white';
 
-  scoreEl.classList.remove('bg-green-600', 'bg-yellow-500', 'bg-red-600');
-  if (score <= 33) scoreEl.classList.add('bg-green-600');
-  else if (score <= 66) scoreEl.classList.add('bg-yellow-500');
-  else scoreEl.classList.add('bg-red-600');
-}
+  if (score <= 33) {
+    scoreEl.classList.add('bg-green-600');
+    labelEl.textContent = 'Low';
+  } else if (score <= 66) {
+    scoreEl.classList.add('bg-yellow-500');
+    labelEl.textContent = 'Moderate';
+  } else {
+    scoreEl.classList.add('bg-red-600');
+    labelEl.textContent = 'High';
+  }
 
-function getRiskLevelText(score) {
-  if (score <= 33) return 'Low';
-  if (score <= 66) return 'Moderate';
-  return 'High';
+  // Assign score number
+  scoreEl.textContent = score.toFixed(0);
 }
 
 function getChecklistResponses() {

@@ -1,38 +1,29 @@
 import { getTranslation } from './i18n.js';
 
 export async function loadChecklist() {
+  const response = await fetch('checklist.csv');
+  const csv = await response.text();
+  const rows = csv.trim().split('\n').map(r => r.split(','));
   const container = document.getElementById('checklist');
-  if (!container) {
-    console.warn('⚠️ #checklist element not found in DOM');
-    return;
-  }
+  if (!container) return;
 
-  try {
-    const res = await fetch('data/checklist.csv');
-    const csvText = await res.text();
-    const rows = csvText.trim().split('\n').map(line => line.split(','));
-    const [header, ...items] = rows;
+  container.innerHTML = '';
 
-    container.innerHTML = '<h2 class="text-lg font-bold mb-2">' + getTranslation('checklistTitle') + '</h2>';
+  rows.slice(1).forEach(([id, code]) => {
+    const labelKey = `label_${id}`;
+    const labelText = getTranslation(labelKey);
 
-    const checklistEl = document.createElement('div');
-    checklistEl.className = 'grid grid-cols-1 gap-2';
+    const label = document.createElement('label');
+    label.classList.add('block', 'mb-2');
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.id = id;
+    checkbox.name = id;
+    checkbox.classList.add('mr-2');
+    label.appendChild(checkbox);
+    label.appendChild(document.createTextNode(labelText));
+    container.appendChild(label);
+  });
 
-    items.forEach(([code, label]) => {
-      const translatedLabel = getTranslation(code) || label;
-
-      const wrapper = document.createElement('label');
-      wrapper.className = 'flex items-center space-x-2';
-      wrapper.innerHTML = `
-        <input type="checkbox" data-code="${code}" class="check-item accent-green-600" />
-        <span>${translatedLabel}</span>
-      `;
-      checklistEl.appendChild(wrapper);
-    });
-
-    container.appendChild(checklistEl);
-    console.log('✅ Checklist rendered');
-  } catch (err) {
-    console.error('❌ Failed to load checklist:', err);
-  }
+  console.log('✅ Checklist rendered');
 }

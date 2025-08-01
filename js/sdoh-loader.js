@@ -1,68 +1,38 @@
-// sdoh-loader.js (ES6 module)
-import { getTranslation } from './i18n.js';
+import { getLang, getTranslation } from './i18n.js';
 
 export async function loadSDOH() {
-  const res = await fetch('data/sdoh.csv');
-  const text = await res.text();
+  const response = await fetch('sdoh.csv');
+  const csv = await response.text();
+  const rows = csv.trim().split('\n').map(r => r.split(','));
 
-  const lines = text.trim().split('\n');
   const container = document.getElementById('sdoh-form');
-  if (!container) {
-    console.warn('⚠️ #sdoh-form element not found in DOM');
-    return;
-  }
+  if (!container) return;
 
-  container.innerHTML = ''; // Clear on reload
+  container.innerHTML = '';
 
-  const headers = lines[0].split(',');
-  const idxMap = {};
-  headers.forEach((h, i) => (idxMap[h] = i));
+  rows.slice(1).forEach(([id, type, value]) => {
+    const labelKey = `${id}_label`;
+    const labelText = getTranslation(labelKey);
 
-  lines.slice(1).forEach((line, rowIdx) => {
-    const cols = line.split(',');
+    if (!container.querySelector(`#${id}`)) {
+      const label = document.createElement('label');
+      label.textContent = labelText;
+      label.setAttribute('for', id);
+      label.classList.add('block', 'mt-4', 'font-semibold');
+      container.appendChild(label);
 
-    const id = cols[idxMap['id']];
-    const labelKey = cols[idxMap['label_key']];
-    const code = cols[idxMap['code']];
-    const codeSystem = cols[idxMap['code_system']];
-
-    const optionKeys = headers
-      .filter(h => h.startsWith('opt'))
-      .map(h => cols[idxMap[h]])
-      .filter(k => k && k.trim().length > 0);
-
-    if (!id || !labelKey) {
-      console.warn(`⚠️ Skipping row ${rowIdx + 2}: missing id or label_key`);
-      return;
+      const select = document.createElement('select');
+      select.id = id;
+      select.name = id;
+      select.classList.add('w-full', 'border', 'p-2', 'rounded');
+      container.appendChild(select);
     }
 
-    const div = document.createElement('div');
-    div.className = 'p-2 border-b';
-
-    const label = document.createElement('label');
-    label.className = 'font-medium';
-    label.setAttribute('for', id);
-    label.textContent = getTranslation(labelKey);
-
-    const select = document.createElement('select');
-    select.id = id;
-    select.className = 'border mt-1 w-full';
-    select.setAttribute('data-observation', '');
-    select.setAttribute('data-label', getTranslation(labelKey));
-    select.setAttribute('data-code', code);
-    select.setAttribute('data-code-system', codeSystem);
-
-    optionKeys.forEach((optKey, index) => {
-      const option = document.createElement('option');
-      option.value = optKey;
-      option.textContent = getTranslation(`${labelKey}_opt${index + 1}`);
-      select.appendChild(option);
-    });
-
-    div.appendChild(label);
-    div.appendChild(document.createElement('br'));
-    div.appendChild(select);
-    container.appendChild(div);
+    const opt = document.createElement('option');
+    const optKey = `${id}_opt${value}`;
+    opt.value = optKey;
+    opt.textContent = getTranslation(optKey);
+    container.querySelector(`#${id}`).appendChild(opt);
   });
 
   console.log('✅ SDOH form loaded with corrected label and option translations');

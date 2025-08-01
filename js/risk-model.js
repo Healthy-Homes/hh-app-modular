@@ -84,18 +84,14 @@ export function setupRiskScoring() {
   console.groupEnd();
 }
 
-// ✅ Risk badge with aligned and readable label
+// ✅ Helper: apply risk badge with score + label
 function applyRiskBadge(score, el) {
   if (!el) return;
 
-  el.textContent = ''; // Clear previous content
+  // Clear existing content
+  el.innerHTML = '';
 
-  // Score number badge
-  const scoreSpan = document.createElement('span');
-  scoreSpan.textContent = score;
-  scoreSpan.className = 'px-2 py-1 rounded text-white font-bold';
-
-  // Determine color and label
+  // Determine badge color and label
   let colorClass, labelText;
   if (score <= 33) {
     colorClass = 'bg-green-600';
@@ -107,15 +103,25 @@ function applyRiskBadge(score, el) {
     colorClass = 'bg-red-600';
     labelText = 'High';
   }
-  scoreSpan.classList.add(colorClass);
 
-  // Risk label next to number
+  // Container
+  const wrapper = document.createElement('div');
+  wrapper.className = 'flex items-center space-x-2';
+
+  // Score badge
+  const scoreSpan = document.createElement('span');
+  scoreSpan.textContent = score;
+  scoreSpan.className = `px-2 py-1 rounded text-white font-bold ${colorClass}`;
+
+  // Label
   const labelSpan = document.createElement('span');
   labelSpan.textContent = labelText;
-  labelSpan.className = 'ml-2 text-gray-800 font-medium align-middle';
+  labelSpan.className = 'text-gray-800 font-semibold';
 
-  el.appendChild(scoreSpan);
-  el.appendChild(labelSpan);
+  // Combine and insert
+  wrapper.appendChild(scoreSpan);
+  wrapper.appendChild(labelSpan);
+  el.appendChild(wrapper);
 }
 
 // ✅ Helper: parse checklist checkboxes

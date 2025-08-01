@@ -1,7 +1,7 @@
+// i18n.js
 let currentLang = 'en';
 let currentTranslations = {};
 
-// ✅ Initialize language toggle buttons
 function setupLanguage() {
   const toggle = document.getElementById('language-toggle');
   if (!toggle) {
@@ -20,7 +20,6 @@ function setupLanguage() {
   switchLanguage(currentLang); // Load default
 }
 
-// ✅ Switch language and reload dynamic content
 async function switchLanguage(lang) {
   currentLang = lang;
 
@@ -52,15 +51,12 @@ async function switchLanguage(lang) {
   if (typeof setupConsent === 'function') setupConsent();
 }
 
-// ✅ Translation lookup
 function getTranslation(key) {
   return currentTranslations[key] || key;
 }
 
-// ✅ Get current language
 function getLang() {
   return currentLang;
 }
 
-// ✅ Export as ES6 module
 export { setupLanguage, getTranslation, getLang };

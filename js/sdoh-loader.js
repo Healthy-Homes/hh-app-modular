@@ -1,4 +1,4 @@
-// ✅ sdoh-loader.js (ES6 module)
+// sdoh-loader.js (ES6 module)
 import { getTranslation } from './i18n.js';
 
 export async function loadSDOH() {
@@ -53,9 +53,8 @@ export async function loadSDOH() {
     select.setAttribute('data-code-system', codeSystem);
 
     optionKeys.forEach(optKey => {
-      const shortKey = optKey.split('_').pop(); // e.g., "Always" from "opt1_Always"
       const option = document.createElement('option');
-      option.value = shortKey;
+      option.value = optKey;
       option.textContent = getTranslation(optKey);
       select.appendChild(option);
     });

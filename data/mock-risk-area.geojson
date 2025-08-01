@@ -1,4 +1,4 @@
-{{
+{
   "type": "FeatureCollection",
   "features": [
     {
@@ -16,42 +16,6 @@
           [121.5330, 25.0438],
           [121.5315, 25.0438],
           [121.5315, 25.0423]
-        ]]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "Medium Risk Area - Urban Traffic",
-        "risk_level": "medium",
-        "description": "Moderate air pollution from traffic"
-      },
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[
-          [121.5300, 25.0410],
-          [121.5315, 25.0410],
-          [121.5315, 25.0423],
-          [121.5300, 25.0423],
-          [121.5300, 25.0410]
-        ]]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "Low Risk Area - Residential",
-        "risk_level": "low",
-        "description": "Clean air residential zone"
-      },
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[
-          [121.5330, 25.0410],
-          [121.5345, 25.0410],
-          [121.5345, 25.0423],
-          [121.5330, 25.0423],
-          [121.5330, 25.0410]
         ]]
       }
     }

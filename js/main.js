@@ -1,49 +1,27 @@
-// Debug version with detailed logging
-console.log('🚀 Starting app initialization...');
+import { setupLanguage } from './i18n.js';
+import { setupConsent } from './consent.js';
+import { initializeMap } from './map.js';
+import { exportPDF } from './pdf-export.js';
+import { generateFHIR } from './fhir-export.js';
+import { calculateRiskScores, setupRiskScoring } from './risk-model.js';
+import { loadChecklist, getChecklistData } from './checklist-loader.js';
+import { loadSDOH, getSDOHData } from './sdoh-loader.js';
 
 window.addEventListener('DOMContentLoaded', async () => {
-  console.log('🎯 DOM loaded, starting modules...');
+  console.log('🚀 Initializing Healthy Homes App...');
 
   try {
-    // Test imports one by one
-    console.log('📦 Loading i18n module...');
-    const { setupLanguage } = await import('./i18n.js');
-    console.log('✅ i18n loaded');
-
-    console.log('📦 Loading consent module...');
-    const { setupConsent } = await import('./consent.js');
-    console.log('✅ consent loaded');
-
-    console.log('📦 Loading checklist module...');
-    const { loadChecklist, getChecklistData } = await import('./checklist-loader.js');
-    console.log('✅ checklist module loaded');
-
-    console.log('📦 Loading SDOH module...');
-    const { loadSDOH, getSDOHData } = await import('./sdoh-loader.js');
-    console.log('✅ SDOH module loaded');
-
-    console.log('📦 Loading risk model...');
-    const { calculateRiskScores, setupRiskScoring } = await import('./risk-model.js');
-    console.log('✅ risk model loaded');
-
-    console.log('📦 Loading export modules...');
-    const { exportPDF } = await import('./pdf-export.js');
-    const { generateFHIR } = await import('./fhir-export.js');
-    console.log('✅ export modules loaded');
-
-    console.log('📦 Loading map module...');
-    const { initializeMap } = await import('./map.js');
-    console.log('✅ map module loaded');
-
-    // Initialize step by step
+    // Initialize language and load translations first
     console.log('🌐 Setting up language...');
     await setupLanguage();
     console.log('✅ Language setup complete');
-
+    
+    // Setup other components
     console.log('📝 Setting up consent...');
     setupConsent();
     console.log('✅ Consent setup complete');
-
+    
+    // Load data
     console.log('📋 Loading checklist data...');
     await loadChecklist();
     console.log('✅ Checklist data loaded');
@@ -51,66 +29,70 @@ window.addEventListener('DOMContentLoaded', async () => {
     console.log('🏥 Loading SDOH data...');
     await loadSDOH();
     console.log('✅ SDOH data loaded');
-
+    
+    // Initialize map (async, non-blocking) - Fixed the catch issue
     console.log('🗺️ Initializing map...');
-    initializeMap().catch(err => {
-      console.warn('⚠️ Map failed to load:', err);
-    });
-
+    try {
+      await initializeMap();
+      console.log('✅ Map initialized successfully');
+    } catch (mapError) {
+      console.warn('⚠️ Map initialization failed:', mapError);
+    }
+    
+    // Setup risk scoring
     console.log('🎲 Setting up risk scoring...');
     setupRiskScoring();
     console.log('✅ Risk scoring setup complete');
 
-    console.log('📄 Setting up export functionality...');
+    // Setup export functionality
+    console.log('📄 Setting up export...');
     const exportBtn = document.getElementById('export-report');
     if (!exportBtn) {
-      console.error('🛑 Export button not found!');
+      console.error('🛑 #export-report button not found');
       return;
     }
 
     exportBtn.addEventListener('click', () => {
-      console.log('📄 Export clicked');
-      try {
-        const checklistData = getChecklistData();
-        const sdohData = getSDOHData();
-        const includeRisk = document.getElementById('risk-toggle')?.checked ?? false;
-        
-        console.log('Export data check:', {
-          checklistItems: Object.keys(checklistData).length,
-          sdohItems: Object.keys(sdohData).length,
-          includeRisk
-        });
-        
-        let scores = null;
-        if (includeRisk) {
-          scores = calculateRiskScores(checklistData, sdohData);
-          console.log('Risk scores calculated:', scores);
-        }
-        
-        const bundle = generateFHIR(checklistData, sdohData, includeRisk, scores);
-        console.log('FHIR bundle generated, calling PDF export...');
-        exportPDF(bundle);
-      } catch (exportError) {
-        console.error('🛑 Export failed:', exportError);
-        alert('Export failed: ' + exportError.message);
+      console.log('📄 Export button clicked');
+      
+      const checklistData = getChecklistData();
+      const sdohData = getSDOHData();
+      const includeRisk = document.getElementById('risk-toggle')?.checked ?? false;
+      
+      console.log('Export data:', {
+        checklistItems: Object.keys(checklistData).length,
+        sdohItems: Object.keys(sdohData).length,
+        includeRisk
+      });
+      
+      let scores = null;
+      if (includeRisk) {
+        scores = calculateRiskScores(checklistData, sdohData);
+        console.log('Risk scores:', scores);
       }
+      
+      const bundle = generateFHIR(checklistData, sdohData, includeRisk, scores);
+      exportPDF(bundle);
     });
 
-    console.log('🎉 App initialization complete!');
+    console.log('✅ App initialization complete');
     
   } catch (error) {
-    console.error('🛑 Initialization failed at step:', error);
+    console.error('🛑 App initialization failed:', error);
     console.error('Stack trace:', error.stack);
     
-    // Show user-friendly error
+    // Show user-friendly error message
     const main = document.querySelector('main');
     if (main) {
       const errorDiv = document.createElement('div');
       errorDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4';
       errorDiv.innerHTML = `
-        <strong>App Failed to Load:</strong><br>
-        ${error.message}<br>
-        <small>Check console for details</small>
+        <strong>Initialization Error:</strong> 
+        The application failed to load properly. Please refresh the page or check your internet connection.
+        <details class="mt-2">
+          <summary class="cursor-pointer">Technical Details</summary>
+          <pre class="text-xs mt-2">${error.message}</pre>
+        </details>
       `;
       main.insertBefore(errorDiv, main.firstChild);
     }
